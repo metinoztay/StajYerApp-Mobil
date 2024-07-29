@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:stajyer_app/models/loginModel.dart';
 import 'package:stajyer_app/services/loginService.dart';
 import 'package:stajyer_app/utils/colors.dart';
+import 'package:stajyer_app/views/pages/RegisterPage.dart';
 import 'package:stajyer_app/views/pages/homePage.dart';
 
 class LoginPage extends StatefulWidget {
@@ -14,9 +15,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
-    bool obscurePassword = true;
-
+  bool obscurePassword = true;
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -76,7 +75,6 @@ class _LoginPageState extends State<LoginPage> {
                             controller: _passwordController,
                             obscureText: obscurePassword,
                             decoration: InputDecoration(
-                              
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                   borderSide: BorderSide(
@@ -86,23 +84,20 @@ class _LoginPageState extends State<LoginPage> {
                                         2.0, // Odaklanıldığında kenarlık kalınlığı
                                   ),
                                 ),
-                                suffixIcon:IconButton(onPressed: (){
-                                  setState(() {
-                                    obscurePassword = !obscurePassword;
-                                  });
-                                }, icon: Icon(
-                                  
-                                   obscurePassword
-                              ? Icons.lock_open
-                              : Icons.lock
-                                ),),
-                                 
-                                
+                                suffixIcon: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      obscurePassword = !obscurePassword;
+                                    });
+                                  },
+                                  icon: Icon(obscurePassword
+                                      ? Icons.lock_open
+                                      : Icons.lock),
+                                ),
                                 hintText: "Şifrenizi Giriniz",
                                 filled: true,
                                 fillColor: background,
                                 border: OutlineInputBorder(
-                                  
                                     borderRadius: BorderRadius.circular(10))),
                           ),
                         ),
@@ -131,22 +126,19 @@ class _LoginPageState extends State<LoginPage> {
               child: SizedBox(
                   width: 330,
                   child: ElevatedButton(
-                      onPressed: () async{
-                        
-
-
+                      onPressed: () async {
                         final loginModel = LoginModel(
-                          uemail: _emailController.text,
-                          upassword: _passwordController.text
-                        );
+                            uemail: _emailController.text,
+                            upassword: _passwordController.text);
 
                         final success = await _loginService.login(loginModel);
 
                         if (success) {
                           Navigator.push(
-                              context, MaterialPageRoute(builder: (context) => HomePage()));
-                        }
-                        else{
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HomePage()));
+                        } else {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text('Giriş Başarısız Lütfen tekrar dene'),
                           ));
@@ -170,7 +162,12 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(fontWeight: FontWeight.normal),
                 ),
                 TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => RegisterPage()));
+                    },
                     child: Text(
                       "Kayıt Ol!",
                       style:
@@ -188,9 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(fontWeight: FontWeight.normal),
                   ),
                   TextButton(
-                      onPressed: () {
-                       
-                      },
+                      onPressed: () {},
                       child: Text(
                         "Giriş Yap!",
                         style: TextStyle(
