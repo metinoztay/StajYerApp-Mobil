@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:stajyer_app/models/CompanyModel.dart';
-import 'package:stajyer_app/services/Endpoints.dart';
+import 'package:stajyer_app/services/endpoints.dart';
 import 'package:http/http.dart' as http;
 
 //TÜM ŞİRKETLERİ LİSTELEME

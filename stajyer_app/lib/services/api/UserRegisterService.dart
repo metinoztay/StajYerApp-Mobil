@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:stajyer_app/models/UserRegisterModel.dart';
-import 'package:stajyer_app/services/Endpoints.dart';
+import 'package:stajyer_app/services/endpoints.dart';
 
 class UserRegisterService {
   Future<bool> CreateUser(UserRegisterModel newUser) async {
