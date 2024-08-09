@@ -156,16 +156,10 @@ class _CompanyLoginPageState extends State<CompanyLoginPage> {
                       if (result.isVerified) {
                         // Eğer şifre ayarlanmışsa, ana sayfaya yönlendir
                         Navigator.push(
-<<<<<<< HEAD
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => GirisNavigation()));
-=======
                           context,
                           MaterialPageRoute(
                               builder: (context) => GirisNavigation()),
                         );
->>>>>>> Beyza
                       } else {
                         // Şifre oluşturma popup'ını göster
                         showDialog(
@@ -220,17 +214,10 @@ class _CompanyLoginPageState extends State<CompanyLoginPage> {
                   TextButton(
                     onPressed: () {
                       Navigator.push(
-<<<<<<< HEAD
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => CompanyRegisterPage()));
-                      // Kayıt olma sayfasına yönlendirme yapılabilir
-=======
                         context,
                         MaterialPageRoute(
                             builder: (context) => CompanyRegisterPage()),
                       );
->>>>>>> Beyza
                     },
                     child: Text(
                       "Kayıt ol",
