@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:stajyer_app/utils/colors.dart';
-import 'package:stajyer_app/views/components/navigationBar.dart';
-import 'package:stajyer_app/views/pages/examplelistpage.dart';
-import 'package:stajyer_app/views/pages/homeNavigation.dart';
-import 'package:stajyer_app/views/pages/homePage.dart';
-import 'package:stajyer_app/views/pages/splashScreen.dart';
+import 'package:stajyer_app/User/utils/colors.dart';
+import 'package:stajyer_app/User/views/components/navigationBar.dart';
+import 'package:stajyer_app/User/views/pages/examplelistpage.dart';
+import 'package:stajyer_app/User/views/pages/homeNavigation.dart';
+import 'package:stajyer_app/User/views/pages/homePage.dart';
+import 'package:stajyer_app/User/views/pages/splashScreen.dart';
 
 void main() {
   runApp(const MyApp());
