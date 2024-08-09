@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:stajyer_app/Company/models/companyLoginModel.dart';
 import 'package:stajyer_app/Company/services/api/companyLoginService.dart';
 import 'package:stajyer_app/Company/views/components/createPasswordPopup.dart';
+import 'package:stajyer_app/Company/views/pages/CompanyRegisterPage.dart';
+import 'package:stajyer_app/Company/views/pages/GirisNavigation.dart';
 import 'package:stajyer_app/User/utils/colors.dart';
 import 'package:stajyer_app/User/views/pages/ForgotPassword.dart';
 import 'package:stajyer_app/User/views/pages/homeNavigation.dart';
@@ -56,8 +58,10 @@ class _CompanyLoginPageState extends State<CompanyLoginPage> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                   borderSide: BorderSide(
-                                    color: Colors.blue, // Odaklanıldığında kenarlık rengi
-                                    width: 2.0, // Odaklanıldığında kenarlık kalınlığı
+                                    color: Colors
+                                        .blue, // Odaklanıldığında kenarlık rengi
+                                    width:
+                                        2.0, // Odaklanıldığında kenarlık kalınlığı
                                   ),
                                 ),
                                 hintText: "E-Mailinizi Giriniz",
@@ -76,8 +80,10 @@ class _CompanyLoginPageState extends State<CompanyLoginPage> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                   borderSide: BorderSide(
-                                    color: Colors.blue, // Odaklanıldığında kenarlık rengi
-                                    width: 2.0, // Odaklanıldığında kenarlık kalınlığı
+                                    color: Colors
+                                        .blue, // Odaklanıldığında kenarlık rengi
+                                    width:
+                                        2.0, // Odaklanıldığında kenarlık kalınlığı
                                   ),
                                 ),
                                 suffixIcon: IconButton(
@@ -129,36 +135,39 @@ class _CompanyLoginPageState extends State<CompanyLoginPage> {
                 width: 330,
                 child: ElevatedButton(
                   onPressed: () async {
+                    // Kullanıcıdan alınan email ve şifre ile CompanyLoginModel oluşturuluyor
                     final loginModel = CompanyLoginModel(
                       email: _emailController.text,
                       password: _passwordController.text,
-                      compUserId: 0, // Placeholder value
-                      nameSurname: "", // Placeholder value
-                      phone: "", // Placeholder value
-                      taxNumber: "", // Placeholder value
-                      taxCityId: 0, // Placeholder value
-                      taxOfficeId: 0, // Placeholder value
-                      isVerified: false, // Placeholder value
-                      hasSetPassword: true, // Placeholder value
+                      compUserId: 0, // Diğer alanlar için varsayılan değerler
+                      nameSurname: "", // Boş değer
+                      phone: "", // Boş değer
+                      taxNumber: "", // Boş değer
+                      taxCityId: 0, // Varsayılan değer
+                      taxOfficeId: 0, // Varsayılan değer
+                      isVerified: false, // Varsayılan değer
+                      hasSetPassword: false, // Varsayılan değer
                     );
 
                     final result = await _loginService.login(loginModel);
 
                     if (result != null) {
-                      if (result.hasSetPassword) {
-                        // Anasayfa'ya yönlendirme
+                      // Servisten dönen CompanyLoginModel ile çalışıyoruz
+                      if (result.isVerified) {
+                        // Eğer şifre ayarlanmışsa, ana sayfaya yönlendir
                         Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => homeNavigation()),
-                        );
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => GirisNavigation()));
                       } else {
-                        // Şifre oluşturma popup'ı gösterme
+                        // Şifre oluşturma popup'ını göster
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
                               title: Text('Şifre Oluştur'),
-                              content: CreatePasswordPopup(),
+                              content: CreatePasswordPopup(
+                                  compUserId: result.compUserId),
                               actions: [
                                 TextButton(
                                   onPressed: () {
@@ -166,20 +175,13 @@ class _CompanyLoginPageState extends State<CompanyLoginPage> {
                                   },
                                   child: Text('İptal'),
                                 ),
-                                TextButton(
-                                  onPressed: () {
-                                    // Şifre oluşturma işlemleri burada yapılabilir
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('Kaydet'),
-                                ),
                               ],
                             );
                           },
                         );
                       }
                     } else {
-                      // Hata mesajı göster
+                      // Giriş başarısız olursa hata mesajı göster
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text('Giriş Başarısız Lütfen tekrar deneyin'),
                       ));
@@ -210,6 +212,10 @@ class _CompanyLoginPageState extends State<CompanyLoginPage> {
                   ),
                   TextButton(
                     onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CompanyRegisterPage()));
                       // Kayıt olma sayfasına yönlendirme yapılabilir
                     },
                     child: Text(

@@ -17,7 +17,7 @@ class CompanyLoginModel {
     required this.email,
     required this.password,
     required this.taxNumber,
-    required this.taxCityId,
+    required this.taxCityId, 
     required this.taxOfficeId,
     required this.isVerified,
     required this.hasSetPassword,

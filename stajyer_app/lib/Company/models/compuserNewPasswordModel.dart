@@ -7,7 +7,7 @@ class CompUserNewPasswordModel {
     required this.compUserId,
     required this.oldPassword,
     required this.newPassword,
-  });
+  }); 
 
   // JSON'dan model oluşturma
   factory CompUserNewPasswordModel.fromJson(Map<String, dynamic> json) {

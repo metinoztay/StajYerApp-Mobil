@@ -6,13 +6,13 @@ class CompUserNewPasswordService {
   final String apiUrl = 'http://stajyerapp.runasp.net/api/CompanyUser/NewPassword';
 
   Future<void> changePassword(CompUserNewPasswordModel model) async {
-    final response = await http.post(
+    final response = await http.put(
       Uri.parse(apiUrl),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(model.toJson()),
-    );
+    ); 
 
     if (response.statusCode == 200) {
       // Başarıyla güncellendi
