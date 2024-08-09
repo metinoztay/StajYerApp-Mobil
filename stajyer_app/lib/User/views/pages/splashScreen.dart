@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:stajyer_app/Company/views/pages/GirisNavigation.dart';
 import 'package:stajyer_app/User/utils/colors.dart';
 import 'package:stajyer_app/User/views/pages/homeNavigation.dart';
 import 'package:stajyer_app/User/views/pages/homePage.dart';
@@ -34,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
       // Kullanıcı ID bulunamadıysa login sayfasına yönlendir
       Timer(const Duration(seconds: 3), () {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const GirisNavigation()),
+          MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       });
     }

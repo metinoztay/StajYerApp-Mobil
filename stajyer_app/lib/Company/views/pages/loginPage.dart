@@ -1,33 +1,30 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:stajyer_app/Company/views/pages/loginPage.dart';
-import 'package:stajyer_app/User/models/loginModel.dart';
-import 'package:stajyer_app/User/services/api/loginService.dart';
+import 'package:stajyer_app/Company/models/companyLoginModel.dart';
+import 'package:stajyer_app/Company/services/api/companyLoginService.dart';
+import 'package:stajyer_app/Company/views/components/createPasswordPopup.dart';
 import 'package:stajyer_app/User/utils/colors.dart';
 import 'package:stajyer_app/User/views/pages/ForgotPassword.dart';
-import 'package:stajyer_app/User/views/pages/RegisterPage.dart';
 import 'package:stajyer_app/User/views/pages/homeNavigation.dart';
-import 'package:stajyer_app/User/views/pages/homePage.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class CompanyLoginPage extends StatefulWidget {
+  const CompanyLoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<CompanyLoginPage> createState() => _CompanyLoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _CompanyLoginPageState extends State<CompanyLoginPage> {
   bool obscurePassword = true;
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  final LoginService _loginService = LoginService();
+  final CompanyLoginService _loginService = CompanyLoginService();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -35,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
               child: SizedBox(
                 width: 355,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 100.0),
+                  padding: const EdgeInsets.only(top: 40.0),
                   child: Card(
                     color: button,
                     child: Column(
@@ -44,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
                         Padding(
                           padding: const EdgeInsets.all(30.0),
                           child: Text(
-                            "StajYerApp griş yapxwxs",
+                            "StajYerApp Şirket Girişi",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 30,
@@ -59,10 +56,8 @@ class _LoginPageState extends State<LoginPage> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                   borderSide: BorderSide(
-                                    color: Colors
-                                        .blue, // Odaklanıldığında kenarlık rengi
-                                    width:
-                                        2.0, // Odaklanıldığında kenarlık kalınlığı
+                                    color: Colors.blue, // Odaklanıldığında kenarlık rengi
+                                    width: 2.0, // Odaklanıldığında kenarlık kalınlığı
                                   ),
                                 ),
                                 hintText: "E-Mailinizi Giriniz",
@@ -81,10 +76,8 @@ class _LoginPageState extends State<LoginPage> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                   borderSide: BorderSide(
-                                    color: Colors
-                                        .blue, // Odaklanıldığında kenarlık rengi
-                                    width:
-                                        2.0, // Odaklanıldığında kenarlık kalınlığı
+                                    color: Colors.blue, // Odaklanıldığında kenarlık rengi
+                                    width: 2.0, // Odaklanıldığında kenarlık kalınlığı
                                   ),
                                 ),
                                 suffixIcon: IconButton(
@@ -133,56 +126,78 @@ class _LoginPageState extends State<LoginPage> {
             Padding(
               padding: const EdgeInsets.only(top: 30.0, bottom: 30),
               child: SizedBox(
-                  width: 330,
-                  child: ElevatedButton(
-                      onPressed: () async {
-                        final loginModel = LoginModel(
-                            uemail: _emailController.text,
-                            upassword: _passwordController.text);
+                width: 330,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final loginModel = CompanyLoginModel(
+                      email: _emailController.text,
+                      password: _passwordController.text,
+                      compUserId: 0, // Placeholder value
+                      nameSurname: "", // Placeholder value
+                      phone: "", // Placeholder value
+                      taxNumber: "", // Placeholder value
+                      taxCityId: 0, // Placeholder value
+                      taxOfficeId: 0, // Placeholder value
+                      isVerified: false, // Placeholder value
+                      hasSetPassword: true, // Placeholder value
+                    );
 
-                        final success = await _loginService.login(loginModel);
+                    final result = await _loginService.login(loginModel);
 
-                        if (success) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => homeNavigation()));
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text('Giriş Başarısız Lütfen tekrar dene'),
-                          ));
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: ilanCard,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10))),
-                      child: Padding(
-                        padding: const EdgeInsets.all(18.0),
-                        child: Text("Giriş Yap"),
-                      ))),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Hesabın yok mu",
-                  style: TextStyle(fontWeight: FontWeight.normal),
-                ),
-                TextButton(
-                    onPressed: () {
-                      Navigator.push(
+                    if (result != null) {
+                      if (result.hasSetPassword) {
+                        // Anasayfa'ya yönlendirme
+                        Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => RegisterPage()));
-                    },
-                    child: Text(
-                      "Kayıt Ol!",
-                      style:
-                          TextStyle(color: button, fontWeight: FontWeight.bold),
-                    ))
-              ],
+                          MaterialPageRoute(builder: (context) => homeNavigation()),
+                        );
+                      } else {
+                        // Şifre oluşturma popup'ı gösterme
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Şifre Oluştur'),
+                              content: CreatePasswordPopup(),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('İptal'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    // Şifre oluşturma işlemleri burada yapılabilir
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('Kaydet'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    } else {
+                      // Hata mesajı göster
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Giriş Başarısız Lütfen tekrar deneyin'),
+                      ));
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ilanCard,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: Text("Giriş Yap"),
+                  ),
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 30.0),
@@ -194,17 +209,17 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(fontWeight: FontWeight.normal),
                   ),
                   TextButton(
-                      onPressed: () {
-                         Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => CompanyLoginPage()));
-                      },
-                      child: Text(
-                        "Giriş Yap!",
-                        style: TextStyle(
-                            color: button, fontWeight: FontWeight.bold),
-                      ))
+                    onPressed: () {
+                      // Kayıt olma sayfasına yönlendirme yapılabilir
+                    },
+                    child: Text(
+                      "Kayıt ol",
+                      style: TextStyle(
+                        color: button,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )
                 ],
               ),
             )
