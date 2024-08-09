@@ -5,6 +5,7 @@ import 'package:stajyer_app/Company/models/CompanyRegisterModel.dart';
 import 'package:stajyer_app/Company/models/TaxOfiice.dart';
 import 'package:stajyer_app/Company/services/api/CompanyRegisterService.dart';
 import 'package:stajyer_app/Company/services/api/CityTaxService.dart';
+import 'package:stajyer_app/Company/views/pages/loginPage.dart';
 import 'package:stajyer_app/User/utils/colors.dart';
 
 class CompanyRegisterPage extends StatefulWidget {
@@ -302,6 +303,11 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                                       content: Text('Başarıyla kaydolundu')),
                                 );
                                 _formKey.currentState!.reset();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => CompanyLoginPage()),
+                                );
                               }
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:stajyer_app/Company/models/companyLoginModel.dart';
 import 'package:stajyer_app/Company/services/api/companyLoginService.dart';
 import 'package:stajyer_app/Company/views/components/createPasswordPopup.dart';
+import 'package:stajyer_app/Company/views/pages/CompanyRegisterPage.dart';
+import 'package:stajyer_app/Company/views/pages/GirisNavigation.dart';
 import 'package:stajyer_app/User/utils/colors.dart';
 import 'package:stajyer_app/User/views/pages/ForgotPassword.dart';
 import 'package:stajyer_app/User/views/pages/homeNavigation.dart';
@@ -56,8 +58,10 @@ class _CompanyLoginPageState extends State<CompanyLoginPage> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                   borderSide: BorderSide(
-                                    color: Colors.blue, // Odaklanıldığında kenarlık rengi
-                                    width: 2.0, // Odaklanıldığında kenarlık kalınlığı
+                                    color: Colors
+                                        .blue, // Odaklanıldığında kenarlık rengi
+                                    width:
+                                        2.0, // Odaklanıldığında kenarlık kalınlığı
                                   ),
                                 ),
                                 hintText: "E-Mailinizi Giriniz",
@@ -76,8 +80,10 @@ class _CompanyLoginPageState extends State<CompanyLoginPage> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                   borderSide: BorderSide(
-                                    color: Colors.blue, // Odaklanıldığında kenarlık rengi
-                                    width: 2.0, // Odaklanıldığında kenarlık kalınlığı
+                                    color: Colors
+                                        .blue, // Odaklanıldığında kenarlık rengi
+                                    width:
+                                        2.0, // Odaklanıldığında kenarlık kalınlığı
                                   ),
                                 ),
                                 suffixIcon: IconButton(
@@ -149,7 +155,8 @@ class _CompanyLoginPageState extends State<CompanyLoginPage> {
                         // Anasayfa'ya yönlendirme
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => homeNavigation()),
+                          MaterialPageRoute(
+                              builder: (context) => GirisNavigation()),
                         );
                       } else {
                         // Şifre oluşturma popup'ı gösterme
@@ -210,7 +217,11 @@ class _CompanyLoginPageState extends State<CompanyLoginPage> {
                   ),
                   TextButton(
                     onPressed: () {
-                      // Kayıt olma sayfasına yönlendirme yapılabilir
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CompanyRegisterPage()),
+                      );
                     },
                     child: Text(
                       "Kayıt ol",

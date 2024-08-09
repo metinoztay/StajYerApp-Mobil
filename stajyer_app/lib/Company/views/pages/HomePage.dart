@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stajyer_app/Company/models/Advertisement.dart';
 import 'package:stajyer_app/Company/services/api/CompanyAdvertService.dart';
 import 'package:stajyer_app/User/utils/colors.dart';
@@ -27,14 +28,25 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
 
   Future<void> _fetchAdverts() async {
     try {
-      final adverts =
-          await CompanyAdvertService().fetchAdvertisementsByCompanyUserId(1);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int? companyUserId = prefs.getInt('compUserId');
 
-      setState(() {
-        _allAdverts = adverts;
-        _activeAdverts = adverts.where((adv) => adv.advIsActive).toList();
-        _isLoading = false;
-      });
+      if (companyUserId != null) {
+        final adverts = await CompanyAdvertService()
+            .fetchAdvertisementsByCompanyUserId(companyUserId);
+
+        setState(() {
+          _allAdverts = adverts;
+          _activeAdverts = adverts.where((adv) => adv.advIsActive).toList();
+          _isLoading = false;
+        });
+      } else {
+        // Eğer companyUserId bulunamazsa, bir hata fırlatılabilir veya bir uyarı gösterebilirsiniz
+        print("Company User ID not found");
+        setState(() {
+          _isLoading = false;
+        });
+      }
     } catch (error) {
       print("Error fetching adverts: $error");
       setState(() {
