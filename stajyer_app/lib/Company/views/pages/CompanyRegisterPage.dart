@@ -302,6 +302,11 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                                       content: Text('Başarıyla kaydolundu')),
                                 );
                                 _formKey.currentState!.reset();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => CompanyLoginPage()),
+                                );
                               }
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
