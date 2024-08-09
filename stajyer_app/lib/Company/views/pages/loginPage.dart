@@ -153,7 +153,7 @@ class _CompanyLoginPageState extends State<CompanyLoginPage> {
 
                     if (result != null) {
                       // Servisten dönen CompanyLoginModel ile çalışıyoruz
-                      if (result.isVerified) {
+                      if (result.hasSetPassword) {
                         // Eğer şifre ayarlanmışsa, ana sayfaya yönlendir
                         Navigator.push(
                           context,
