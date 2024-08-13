@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stajyer_app/Company/models/Advertisement.dart';
 import 'package:stajyer_app/Company/services/api/CompanyAdvertService.dart';
+import 'package:stajyer_app/Company/views/pages/EditAdvertPage.dart';
 import 'package:stajyer_app/User/utils/colors.dart';
 import 'package:stajyer_app/User/views/components/SirketCard.dart';
 
@@ -26,6 +27,17 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
     _fetchAdverts();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Bu sayfaya döndüğümüzde güncellemeleri kontrol et
+    final bool? shouldRefresh =
+        ModalRoute.of(context)?.settings.arguments as bool?;
+    if (shouldRefresh == true) {
+      _fetchAdverts();
+    }
+  }
+
   Future<void> _fetchAdverts() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -41,7 +53,6 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
           _isLoading = false;
         });
       } else {
-        // Eğer companyUserId bulunamazsa, bir hata fırlatılabilir veya bir uyarı gösterebilirsiniz
         print("Company User ID not found");
         setState(() {
           _isLoading = false;
@@ -57,7 +68,6 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Assuming company logo and name are passed in or defined somewhere
     final String companyLogo = 'https://via.placeholder.com/150';
     final String companyName = 'Company Name';
 
@@ -100,13 +110,13 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
       child: Column(
         children: adverts.map((advert) {
           return buildJobCard(
-            worktype: advert.advWorkType ?? "No Work Type",
-            title: advert.advTitle ?? "No Title",
-            description: advert.advJobDesc ?? "No Description",
-            location: advert.advAdress ?? "No Location",
-            isActive: advert.advIsActive ?? false,
-            count: advert.advAppCount ?? "",
-          );
+              worktype: advert.advWorkType ?? "No Work Type",
+              title: advert.advTitle ?? "No Title",
+              description: advert.advJobDesc ?? "No Description",
+              location: advert.advAdressTitle ?? "No Location",
+              isActive: advert.advIsActive ?? false,
+              count: advert.advAppCount ?? "",
+              advert: advert);
         }).toList(),
       ),
     );
@@ -119,6 +129,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
     required bool isActive,
     required String worktype,
     String? count,
+    required Advertisement advert,
   }) {
     return Padding(
       padding: const EdgeInsets.all(0.0),
@@ -162,7 +173,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                         SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            count.toString() + " kişi",
+                            count.toString() + " kişi",
                             style: TextStyle(
                               color: isActive ? Colors.white : Colors.black,
                             ),
@@ -177,13 +188,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                         Flexible(
                           child: ElevatedButton(
                             onPressed: () {
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (context) =>
-                              //         AdvCardDetail(advert: advert),
-                              //   ),
-                              // );
+                              // Başvuruları Görüntüle butonuna basıldığında yapılacak işlemler
                             },
                             child: Text(
                               "Başvuruları Görüntüle",
@@ -201,13 +206,18 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                         Flexible(
                           child: ElevatedButton(
                             onPressed: () {
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (context) =>
-                              //         AdvCardDetail(advert: advert),
-                              //   ),
-                              // );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      EditAdvertPage(advert: advert),
+                                ),
+                              ).then((result) {
+                                // Geri dönerken güncellemeleri kontrol et
+                                if (result == true) {
+                                  _fetchAdverts(); // Güncellenmiş ilanları yeniden yükle
+                                }
+                              });
                             },
                             child: Text(
                               "İlan Düzenle",
@@ -237,24 +247,6 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 padding: const EdgeInsets.all(10.0),
                 child: Row(
                   children: [
-                    // Container(
-                    //   width: 40,
-                    //   height: 40,
-                    //   decoration: BoxDecoration(
-                    //     shape: BoxShape.circle,
-                    //     color: Colors.white,
-                    //   ),
-                    //   child: ClipOval(
-                    //     child: FittedBox(
-                    //       fit: BoxFit.cover,
-                    //       child: Image.network(
-                    //         logo,
-                    //         width: 40,
-                    //         height: 40,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
                     SizedBox(width: 10),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,7 +257,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                           style: TextStyle(color: Colors.white),
                         ),
                         Text(
-                          title,
+                          location,
                           style: TextStyle(color: Colors.white),
                         ),
                       ],

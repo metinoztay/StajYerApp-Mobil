@@ -33,6 +33,15 @@ class Company {
     this.advertisements,
   });
   factory Company.fromJson(Map<String, dynamic> json) {
+    var advertisementsJson = json['advertisements'] as Map<String, dynamic>;
+    List<Advertisement>? advertisementsList;
+
+    if (advertisementsJson.containsKey(r'$values')) {
+      advertisementsList = (advertisementsJson[r'$values'] as List<dynamic>)
+          .map((ad) => Advertisement.fromJson(ad))
+          .toList();
+    }
+
     return Company(
       compId: json['compId'],
       compName: json['compName'],
@@ -47,9 +56,7 @@ class Company {
       comLinkedin: json['comLinkedin'],
       compEmployeeCount: json['compEmployeeCount'],
       compUserId: json['compUserId'],
-      advertisements: (json['advertisements'] as List<dynamic>?)
-          ?.map((ad) => Advertisement.fromJson(ad))
-          .toList(),
+      advertisements: advertisementsList,
     );
   }
 

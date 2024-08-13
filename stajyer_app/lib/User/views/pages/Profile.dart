@@ -79,8 +79,6 @@ class _ProfileState extends State<Profile> {
         if (userId != null) {
           UserService userService = UserService();
 
-          // Burada resmi sunucuya yüklemeniz ve URL'yi almanız gerekiyor.
-          // Örneğin, sunucuya resmi yüklemek için userService.uploadProfilePhoto(file) gibi bir metodunuz olabilir.
           String? photoUrl =
               await userService.uploadUserPhoto(user!.userId ?? 22, file);
 
@@ -91,8 +89,6 @@ class _ProfileState extends State<Profile> {
           };
 
           await userService.updateUser(userId, updatedData);
-
-          _getUserInfo(); // Kullanıcı bilgilerini tekrar yükleyin
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

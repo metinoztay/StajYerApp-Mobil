@@ -7,6 +7,9 @@ class Endpoints {
   static const String ListAdvertByCompanyUserId =
       '$baseUrl/Advert/ListAdvertsByCompanyUserId';
 
-    static const String complogin = '$baseUrl/CompanyUser/Login';
-
+  static const String complogin = '$baseUrl/CompanyUser/Login';
+  static const String GetCompanyByCompanyUserId =
+      '$baseUrl/CompanyUser/GetCompanyInformations';
+  static const String CompanyAddAdvert = '$baseUrl/Advert/CompUserAddAdvert';
+  static const String UpdateAdvUrl = '$baseUrl/Advert/UpdateAdvert';
 }
