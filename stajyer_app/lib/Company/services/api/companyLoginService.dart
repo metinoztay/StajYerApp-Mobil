@@ -20,7 +20,8 @@ class CompanyLoginService {
       final CompanyLoginModel user = CompanyLoginModel.fromJson(data);
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setInt('compUserId', user.compUserId); // Kullanıcı ID saklandı
+      await prefs.setInt(
+          'compUserId', user.compUserId); // Kullanıcı ID saklandı
 
       // Login başarılı
       print('Login successful');

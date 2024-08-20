@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stajyer_app/Company/models/CompAdvModel.dart';
 import 'package:stajyer_app/Company/services/api/CompanyAdvertService.dart';
+import 'package:stajyer_app/Company/views/pages/AddCompanyPage.dart';
 import 'package:stajyer_app/User/utils/colors.dart';
 
 class AddAdvertPage extends StatefulWidget {
@@ -14,6 +15,7 @@ class AddAdvertPage extends StatefulWidget {
 
 class _AddAdvertPageState extends State<AddAdvertPage> {
   final _formKey = GlobalKey<FormState>();
+
   late int compUserId;
   final _advTitleController = TextEditingController();
   final _advAdressController = TextEditingController();
@@ -28,6 +30,7 @@ class _AddAdvertPageState extends State<AddAdvertPage> {
   final _advPaymentInfoController = TextEditingController();
   String? _selectedWorkType;
   DateTime? _expFinishDate;
+  bool? _advPaymentInfo;
   final ImagePicker _picker = ImagePicker();
 
   String? advTitle;
@@ -95,6 +98,16 @@ class _AddAdvertPageState extends State<AddAdvertPage> {
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+
+      if (compUserId == 0 || compUserId == null) {
+        // Kullanıcının şirketi yok, AddCompanyPage sayfasına yönlendirme yap
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AddCompanyPage()),
+        );
+        return;
+      }
+
       CompAdvModel newAdvert = CompAdvModel(
         compUserId: compUserId,
         advTitle: _advTitleController.text,
@@ -105,14 +118,14 @@ class _AddAdvertPageState extends State<AddAdvertPage> {
         advPhoto: _advPhotoController.text,
         advAdressTitle: _advAdressTitleController.text,
         advPaymentInfo:
-            _advAddInformationController.text == 'true' ? true : false,
+            _advPaymentInfo == null ? false : _advPaymentInfo ?? false,
         advJobDesc: _advJobDescController.text,
         advQualifications: _advQualificationsController.text,
         advAddInformation: _advAddInformationController.text,
       );
 
       CompanyAdvertService service = CompanyAdvertService();
-      bool isAdded = await service.addAdvert(newAdvert);
+      bool isAdded = await service.addAdvert(context, newAdvert);
 
       if (isAdded) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -222,12 +235,12 @@ class _AddAdvertPageState extends State<AddAdvertPage> {
                     ),
                   ),
                   DropdownMenuItem(
-                    value: 'Yüz yüze',
+                    value: 'Ofiste',
                     child: Row(
                       children: [
-                        Icon(Icons.business, color: Colors.black),
+                        Icon(Icons.apartment, color: Colors.black),
                         SizedBox(width: 10),
-                        Text('Yüz yüze', style: TextStyle(color: Colors.black)),
+                        Text('Ofiste', style: TextStyle(color: Colors.black)),
                       ],
                     ),
                   ),
@@ -309,6 +322,36 @@ class _AddAdvertPageState extends State<AddAdvertPage> {
                     return 'İlan tarihini giriniz';
                   }
                   return null;
+                },
+              ),
+              DropdownButtonFormField<bool>(
+                decoration: InputDecoration(
+                  labelText: 'Ücret ödemesi var mı',
+                ),
+                dropdownColor: Colors.white,
+                icon: Icon(Icons.arrow_drop_down, color: ilanCard),
+                iconSize: 24,
+                value: _advPaymentInfo,
+                items: [
+                  DropdownMenuItem(
+                    value: false,
+                    child: Row(
+                      children: [
+                        Text('Hayır', style: TextStyle(color: Colors.black)),
+                      ],
+                    ),
+                  ),
+                  DropdownMenuItem(
+                    value: true,
+                    child: Row(
+                      children: [
+                        Text('Evet', style: TextStyle(color: Colors.black)),
+                      ],
+                    ),
+                  ),
+                ],
+                onChanged: (value) {
+                  _advPaymentInfo = value;
                 },
               ),
               SizedBox(

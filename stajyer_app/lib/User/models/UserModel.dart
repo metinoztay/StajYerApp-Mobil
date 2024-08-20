@@ -1,3 +1,5 @@
+import 'package:stajyer_app/User/models/CertificateModel.dart';
+
 class UserModel {
   int? userId;
   String? uname;
@@ -15,8 +17,8 @@ class UserModel {
   bool? uisactive;
   bool? uisEmailVerified;
   bool? uisPhoneVerified;
+  List<CertificateModel>? certificates;
 
-  // Varsayılan değerleri burada tanımlayabilirsiniz
   static const String defaultGithub = 'Github adresinizi giriniz';
   static const String defaultLinkedin = 'Linkedin adresinizi giriniz';
   static const String defaultCv = 'Cv linkinizi giriniz';
@@ -33,14 +35,15 @@ class UserModel {
     this.uphone = defaultPhone,
     this.ubirthdate,
     this.ugender,
-    this.ulinkedin = defaultLinkedin, // Varsayılan değer
+    this.ulinkedin = defaultLinkedin,
     this.ucv = defaultCv,
-    this.ugithub = defaultGithub, // Varsayılan değer
+    this.ugithub = defaultGithub,
     this.udesc = defaultDesc,
     this.uprofilephoto,
     this.uisactive,
     this.uisEmailVerified,
     this.uisPhoneVerified,
+    this.certificates,
   });
 
   UserModel.fromJson(Map<String, dynamic> json) {
@@ -54,13 +57,20 @@ class UserModel {
     ugender = json['ugender'];
     ulinkedin = json['ulinkedin'] ?? defaultLinkedin;
     ucv = json['ucv'] ?? defaultCv;
-    // Varsayılan değer burada kontrol edilebilir
     ugithub = json['ugithub'] ?? defaultGithub;
     udesc = json['udesc'] ?? defaultDesc;
     uprofilephoto = json['uprofilephoto'];
     uisactive = json['uisactive'];
     uisEmailVerified = json['uisEmailVerified'];
     uisPhoneVerified = json['uisPhoneVerified'];
+
+    // Sertifikalar kısmını doğru şekilde ayrıştırın
+    if (json['certificates'] != null &&
+        json['certificates']['\$values'] != null) {
+      certificates = CertificateModel.fromJsonList(json['certificates']);
+    } else {
+      certificates = [];
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -81,6 +91,12 @@ class UserModel {
     data['uisactive'] = uisactive;
     data['uisEmailVerified'] = uisEmailVerified;
     data['uisPhoneVerified'] = uisPhoneVerified;
+    if (certificates != null) {
+      data['certificates'] = {
+        '\$id': '3',
+        '\$values': certificates!.map((v) => v.toJson()).toList(),
+      };
+    }
     return data;
   }
 }

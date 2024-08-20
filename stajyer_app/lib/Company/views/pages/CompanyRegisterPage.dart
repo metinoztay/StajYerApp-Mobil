@@ -253,7 +253,9 @@ class _CompanyRegisterPageState extends State<CompanyRegisterPage> {
                       ),
                       if (_selectedCity != null)
                         DropdownButtonFormField<TaxOffice>(
-                          value: _selectedTaxOffice,
+                          value: _taxOffices.contains(_selectedTaxOffice)
+                              ? _selectedTaxOffice
+                              : null,
                           hint: Text("Vergi Dairesi Seçin"),
                           items: _taxOffices.map((TaxOffice taxOffice) {
                             return DropdownMenuItem<TaxOffice>(

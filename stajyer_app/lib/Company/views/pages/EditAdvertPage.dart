@@ -235,13 +235,12 @@ class _EditAdvertPageState extends State<EditAdvertPage> {
                       ),
                     ),
                     DropdownMenuItem(
-                      value: 'Yerinde',
+                      value: 'Ofiste',
                       child: Row(
                         children: [
                           Icon(Icons.apartment, color: Colors.black),
                           SizedBox(width: 10),
-                          Text('Yerinde',
-                              style: TextStyle(color: Colors.black)),
+                          Text('Ofiste', style: TextStyle(color: Colors.black)),
                         ],
                       ),
                     ),

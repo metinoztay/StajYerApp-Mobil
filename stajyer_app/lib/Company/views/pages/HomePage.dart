@@ -5,7 +5,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stajyer_app/Company/models/Advertisement.dart';
 import 'package:stajyer_app/Company/services/api/CompanyAdvertService.dart';
+import 'package:stajyer_app/Company/views/pages/AdvertApplications.dart';
 import 'package:stajyer_app/Company/views/pages/EditAdvertPage.dart';
+import 'package:stajyer_app/Company/views/pages/deneme.dart';
 import 'package:stajyer_app/User/utils/colors.dart';
 import 'package:stajyer_app/User/views/components/SirketCard.dart';
 
@@ -63,6 +65,23 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _deleteAdvert(int? advId) async {
+    if (advId != null) {
+      try {
+        await CompanyAdvertService().deleteAdvert(advId);
+        _fetchAdverts();
+        setState(() {
+          _allAdverts.removeWhere((adv) => adv.advertId == advId);
+          _activeAdverts.removeWhere((adv) => adv.advertId == advId);
+        });
+      } catch (error) {
+        print("ilan silniriken hata : $error");
+      }
+    } else {
+      print("ilan id bulunamadı");
     }
   }
 
@@ -188,6 +207,12 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                         Flexible(
                           child: ElevatedButton(
                             onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AdvertApplications(
+                                        advertId: advert.advertId)),
+                              );
                               // Başvuruları Görüntüle butonuna basıldığında yapılacak işlemler
                             },
                             child: Text(
@@ -202,7 +227,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                             ),
                           ),
                         ),
-                        SizedBox(width: 8), // Daha uygun bir boşluk değeri
+                        SizedBox(width: 30),
                         Flexible(
                           child: ElevatedButton(
                             onPressed: () {
@@ -262,6 +287,14 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                         ),
                       ],
                     ),
+                    SizedBox(
+                      width: 200,
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          _deleteAdvert(advert.advertId);
+                        },
+                        icon: Icon(Icons.delete, color: Colors.white))
                   ],
                 ),
               ),

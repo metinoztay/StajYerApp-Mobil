@@ -167,8 +167,22 @@ class _CompanyLoginPageState extends State<CompanyLoginPage> {
                           builder: (BuildContext context) {
                             return AlertDialog(
                               title: Text('Şifre Oluştur'),
-                              content: CreatePasswordPopup(
-                                  compUserId: result.compUserId),
+                              contentPadding: EdgeInsets.all(
+                                  16.0), // Adjust padding to your needs
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    16.0), // Adjust border radius to your needs
+                              ),
+                              content: Container(
+                                constraints: BoxConstraints(
+                                  maxWidth:
+                                      300, // Set maximum width for the dialog
+                                  maxHeight:
+                                      500, // Set maximum height for the dialog
+                                ),
+                                child: CreatePasswordPopup(
+                                    compUserId: result.compUserId),
+                              ),
                               actions: [
                                 TextButton(
                                   onPressed: () {

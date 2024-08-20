@@ -34,7 +34,7 @@ Future<bool> showAddCertificateDialog(BuildContext context) async {
 
       if (userId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
               content:
                   Text('Kullanıcı ID bulunamadı, lütfen tekrar giriş yapın.')),
         );

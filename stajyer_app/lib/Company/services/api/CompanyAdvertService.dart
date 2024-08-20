@@ -1,11 +1,14 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:stajyer_app/Company/models/Advertisement.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:stajyer_app/Company/models/CompAdvModel.dart';
-import 'package:stajyer_app/Company/models/UpdateAdvModel.dart';
 import 'package:stajyer_app/Company/services/Endpoints.dart';
+import 'package:stajyer_app/Company/views/components/showAddAdvertInfo.dart';
+import 'package:stajyer_app/Company/views/components/showAddCompanyDialog.dart';
+import 'package:stajyer_app/Company/views/pages/AddCompanyPage.dart';
 
 class CompanyAdvertService {
   Future<List<Advertisement>> fetchAdvertisementsByCompanyUserId(
@@ -26,8 +29,14 @@ class CompanyAdvertService {
   }
   // ilan ekleme
 
-  Future<bool> addAdvert(CompAdvModel newAdvert) async {
+  Future<bool> addAdvert(BuildContext context, CompAdvModel newAdvert) async {
     try {
+      if (newAdvert.compUserId == null || newAdvert.compUserId == 0) {
+        // Kullanıcı ID'si yoksa veya geçersizse hata döndür
+        print("Geçersiz kullanıcı ID'si");
+        return false;
+      }
+
       final response = await http.post(
         Uri.parse(Endpoints.CompanyAddAdvert),
         headers: {
@@ -35,10 +44,21 @@ class CompanyAdvertService {
         },
         body: jsonEncode(newAdvert.toJson()),
       );
-      if (response.statusCode == 200) {
-        print("İlan eklendi");
+
+      if (response.statusCode == 500) {
+        // Şirket bulunamadıysa kullanıcıyı şirket ekleme popup'ı açılıyor...
+        print("Şirket bulunamadı, şirket ekleme popup'ı açılıyor...");
+
+        // Şirket ekleme popup'ını aç
+        await showAddAdvertInfo(context);
+
+        return false;
+      } else if (response.statusCode == 200) {
+        // İlan başarıyla eklendi
+        print("İlan başarıyla eklendi");
         return true;
       } else {
+        // Diğer hata durumları
         print("İlan eklenemedi status code = ${response.statusCode}");
         print('Hata Mesajı: ${response.body}');
         return false;
@@ -47,7 +67,9 @@ class CompanyAdvertService {
       print('Hata: $e');
       return false;
     }
-  } // API base URL
+  }
+
+// API base URL
 
   Future<void> updateAdvert(Advertisement advert) async {
     final url = Uri.parse(Endpoints.UpdateAdvUrl);
@@ -99,6 +121,19 @@ class CompanyAdvertService {
     } catch (e) {
       print('Error occurred: $e');
       return null;
+    }
+  }
+
+  //İLAN SİLME
+  Future<void> deleteAdvert(int advertId) async {
+    final response =
+        await http.delete(Uri.parse('${Endpoints.DeleteAdvertUrl}/$advertId'));
+    if (response.statusCode == 200) {
+      print("ilan silindi");
+    } else {
+      print('ilan silinirken hata oluştu : ${response.statusCode}');
+
+      throw Exception("ilan silinirken hata oluştu");
     }
   }
 }

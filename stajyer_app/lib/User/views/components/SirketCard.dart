@@ -140,24 +140,24 @@ class CompanyCard extends StatelessWidget {
               child: Row(
                 children: [
                   SizedBox(width: 20),
-                  Container(
-                    width: 40, // Avatar boyutu
-                    height: 40, // Avatar boyutu
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white, // Boş alanlar için beyaz arka plan
-                    ),
-                    child: ClipOval(
-                      child: FittedBox(
-                        fit: BoxFit.cover,
-                        child: Image.network(
-                          company.compLogo ?? 'https://via.placeholder.com/150',
-                          width: 40, // Avatar boyutu
-                          height: 40, // Avatar boyutu
-                        ),
-                      ),
-                    ),
-                  ),
+                  // Container(
+                  //   width: 40, // Avatar boyutu
+                  //   height: 40, // Avatar boyutu
+                  //   decoration: BoxDecoration(
+                  //     shape: BoxShape.circle,
+                  //     color: Colors.white, // Boş alanlar için beyaz arka plan
+                  //   ),
+                  //   child: ClipOval(
+                  //     child: FittedBox(
+                  //       fit: BoxFit.cover,
+                  //       child: Image.network(
+                  //         company.compLogo ?? 'https://via.placeholder.com/150',
+                  //         width: 40, // Avatar boyutu
+                  //         height: 40, // Avatar boyutu
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                   SizedBox(width: 20),
                   Expanded(
                     child: Text(

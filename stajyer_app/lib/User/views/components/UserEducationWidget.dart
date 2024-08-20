@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:stajyer_app/User/models/EducationModel.dart';
 import 'package:stajyer_app/User/services/api/EducationService.dart';
-import 'package:stajyer_app/User/utils/colors.dart'; // Renkleri bu dosyadan çekiyoruz, eğer varsa
+import 'package:stajyer_app/User/utils/colors.dart';
 import 'package:stajyer_app/User/views/components/AddEducation.dart';
 
 class UserEducationWidget extends StatefulWidget {

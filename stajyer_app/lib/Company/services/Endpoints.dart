@@ -12,4 +12,11 @@ class Endpoints {
       '$baseUrl/CompanyUser/GetCompanyInformations';
   static const String CompanyAddAdvert = '$baseUrl/Advert/CompUserAddAdvert';
   static const String UpdateAdvUrl = '$baseUrl/Advert/UpdateAdvert';
+  static const String AddCompany = '$baseUrl/Company/AddCompany';
+  static const String DeleteAdvertUrl = '$baseUrl/Advert/DeleteAdvert';
+  static const String UpdateCompanyUrl = '$baseUrl/Company/UpdateCompany';
+  static const String ListAdvertApplications =
+      '$baseUrl/Application/ListAdvertsApplications';
+  static const String ApplicationsByAdvId =
+      '$baseUrl/Application/ListAdvertsApplications';
 }
