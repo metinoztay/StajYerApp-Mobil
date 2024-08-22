@@ -151,11 +151,11 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
     required Advertisement advert,
   }) {
     return Padding(
-      padding: const EdgeInsets.all(0.0),
+      padding: const EdgeInsets.all(8.0),
       child: Stack(
         children: [
           SizedBox(
-            width: 380,
+            width: double.infinity, // Use double.infinity for width
             height: 250,
             child: Card(
               color: isActive ? companyCard1 : Colors.grey[300],
@@ -204,7 +204,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                     SizedBox(height: 10),
                     Row(
                       children: [
-                        Flexible(
+                        Expanded(
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.push(
@@ -227,8 +227,8 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                             ),
                           ),
                         ),
-                        SizedBox(width: 30),
-                        Flexible(
+                        SizedBox(width: 10),
+                        Expanded(
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.push(
@@ -264,7 +264,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
             ),
           ),
           SizedBox(
-            width: 380,
+            width: double.infinity, // Use double.infinity for width
             height: 80,
             child: Card(
               color: isActive ? companyCard2 : Colors.grey[400],
@@ -272,24 +272,25 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 padding: const EdgeInsets.all(10.0),
                 child: Row(
                   children: [
-                    SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          title,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        Text(
-                          location,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ],
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            title,
+                            style: TextStyle(color: Colors.white),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            location,
+                            style: TextStyle(color: Colors.white),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
                     ),
-                    SizedBox(
-                      width: 200,
-                    ),
+                    SizedBox(width: 130),
                     IconButton(
                         onPressed: () {
                           _deleteAdvert(advert.advertId);

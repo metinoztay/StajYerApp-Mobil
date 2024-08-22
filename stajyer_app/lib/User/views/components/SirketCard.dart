@@ -8,7 +8,9 @@ import 'package:stajyer_app/User/utils/colors.dart';
 import 'package:stajyer_app/User/views/pages/CompanyDetail.dart';
 
 class SirketCard extends StatefulWidget {
-  const SirketCard({super.key});
+  final String searchText;
+
+  const SirketCard({super.key, required this.searchText});
 
   @override
   State<SirketCard> createState() => _SirketCardState();
@@ -20,33 +22,37 @@ class _SirketCardState extends State<SirketCard> {
   @override
   void initState() {
     super.initState();
-    _companyList = CompanyService().getCompanies(); // Başlatma işlemi
+    _companyList = CompanyService().getCompanies();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: FutureBuilder<List<CompanyModel>?>(
-        future: _companyList,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData ||
-              snapshot.data == null ||
-              snapshot.data!.isEmpty) {
-            return Center(child: Text('No data available'));
-          } else {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (BuildContext context, int index) {
-                return CompanyCard(company: snapshot.data![index]);
-              },
-            );
-          }
-        },
-      ),
+    return FutureBuilder<List<CompanyModel>?>(
+      future: _companyList,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData ||
+            snapshot.data == null ||
+            snapshot.data!.isEmpty) {
+          return Center(child: Text('No data available'));
+        } else {
+          // Filtreleme işlemi
+          var filteredList = snapshot.data!
+              .where((company) =>
+                  company.compName!.toLowerCase().contains(widget.searchText))
+              .toList();
+
+          return ListView.builder(
+            itemCount: filteredList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return CompanyCard(company: filteredList[index]);
+            },
+          );
+        }
+      },
     );
   }
 }
@@ -140,24 +146,29 @@ class CompanyCard extends StatelessWidget {
               child: Row(
                 children: [
                   SizedBox(width: 20),
-                  // Container(
-                  //   width: 40, // Avatar boyutu
-                  //   height: 40, // Avatar boyutu
-                  //   decoration: BoxDecoration(
-                  //     shape: BoxShape.circle,
-                  //     color: Colors.white, // Boş alanlar için beyaz arka plan
-                  //   ),
-                  //   child: ClipOval(
-                  //     child: FittedBox(
-                  //       fit: BoxFit.cover,
-                  //       child: Image.network(
-                  //         company.compLogo ?? 'https://via.placeholder.com/150',
-                  //         width: 40, // Avatar boyutu
-                  //         height: 40, // Avatar boyutu
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
+                  Container(
+                    width: 40, // Avatar size
+                    height: 40, // Avatar size
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color:
+                          Colors.white, // Background color for missing images
+                    ),
+                    child: ClipOval(
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+                        child: Image.network(
+                          company.compLogo ?? 'https://via.placeholder.com/150',
+                          width: 40, // Avatar size
+                          height: 40, // Avatar size
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.network(
+                                'https://via.placeholder.com/150'); // Fallback image
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
                   SizedBox(width: 20),
                   Expanded(
                     child: Text(

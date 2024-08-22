@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stajyer_app/User/utils/colors.dart';
 
 class AddCompanyPage extends StatefulWidget {
   const AddCompanyPage({super.key});
@@ -31,7 +32,11 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Şirket Ekle'),
+          backgroundColor: Colors.white,
+          title: Text(
+            'Şirket Ekle',
+            style: TextStyle(color: Colors.amber),
+          ),
           content: Form(
             key: _formKey,
             child: SingleChildScrollView(
@@ -112,7 +117,6 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
             ElevatedButton(
               onPressed: () {
                 if (_formKey.currentState?.validate() == true) {
-                  // Şirket bilgilerini kaydet
                   _saveCompany();
                   Navigator.of(context).pop(); // Dialog'u kapat
                 }
@@ -126,7 +130,6 @@ class _AddCompanyPageState extends State<AddCompanyPage> {
   }
 
   void _saveCompany() {
-    // Şirket bilgilerini kaydetmek için gerekli işlemleri burada yapabilirsiniz
     print('Şirket Adı: ${_nameController.text}');
     print('Kuruluş Yılı: ${_foundationYearController.text}');
     print('Web Sitesi: ${_websiteController.text}');

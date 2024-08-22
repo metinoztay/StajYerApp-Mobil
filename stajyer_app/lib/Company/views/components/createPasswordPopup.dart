@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stajyer_app/Company/models/compuserNewPasswordModel.dart';
 import 'package:stajyer_app/Company/services/api/compuserNewPasswordService.dart';
+import 'package:stajyer_app/User/utils/colors.dart';
 
 class CreatePasswordPopup extends StatefulWidget {
   final int compUserId;
@@ -12,6 +13,8 @@ class CreatePasswordPopup extends StatefulWidget {
 }
 
 class _CreatePasswordPopupState extends State<CreatePasswordPopup> {
+  final _formKey = GlobalKey<FormState>();
+
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
@@ -41,54 +44,51 @@ class _CreatePasswordPopupState extends State<CreatePasswordPopup> {
   }
 
   void _changePassword() async {
-    if (_oldPasswordController.text.isEmpty ||
-        _newPasswordController.text.isEmpty ||
-        _confirmPasswordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lütfen tüm alanları doldurun.')),
+    if (_formKey.currentState?.validate() ?? false) {
+      final model = CompUserNewPasswordModel(
+        compUserId: widget.compUserId,
+        oldPassword: _oldPasswordController.text,
+        newPassword: _newPasswordController.text,
       );
-      return;
-    }
 
-    if (_newPasswordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Yeni şifreler eşleşmiyor.')),
-      );
-      return;
-    }
-
-    final model = CompUserNewPasswordModel(
-      compUserId: widget.compUserId,
-      oldPassword: _oldPasswordController.text,
-      newPassword: _newPasswordController.text,
-    );
-
-    try {
-      await _service.changePassword(model);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Şifre başarıyla değiştirildi.')),
-      );
-      Navigator.of(context).pop(); // Close the dialog
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Şifre değiştirilemedi: $e')),
-      );
+      try {
+        await _service.changePassword(model);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Şifre başarıyla değiştirildi.')),
+        );
+        Navigator.of(context).pop(); // Close the dialog
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Şifre değiştirilemedi: $e')),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title:
-          Text('Şifre Değiştir', style: TextStyle(fontWeight: FontWeight.bold)),
-      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      content: SizedBox(
-        width: 280, // Smaller width
-        child: SingleChildScrollView(
+    return Dialog(
+      backgroundColor: Colors.white,
+      insetPadding: EdgeInsets.symmetric(horizontal: 20.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Form(
+          key: _formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(
+              Text(
+                'Yeni Şifre Oluştur',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 20),
+              TextFormField(
                 controller: _oldPasswordController,
                 decoration: InputDecoration(
                   labelText: 'Eski Şifre',
@@ -100,23 +100,39 @@ class _CreatePasswordPopupState extends State<CreatePasswordPopup> {
                   ),
                 ),
                 obscureText: _obscureOldPassword,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Eski şifreyi giriniz.';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 10),
-              TextField(
-                controller: _newPasswordController,
-                decoration: InputDecoration(
-                  labelText: 'Yeni Şifre',
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscureNewPassword
-                        ? Icons.visibility_off
-                        : Icons.visibility),
-                    onPressed: _toggleNewPasswordVisibility,
+              TextFormField(
+                  controller: _newPasswordController,
+                  decoration: InputDecoration(
+                    labelText: 'Yeni Şifre',
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscureNewPassword
+                          ? Icons.visibility_off
+                          : Icons.visibility),
+                      onPressed: _toggleNewPasswordVisibility,
+                    ),
                   ),
-                ),
-                obscureText: _obscureNewPassword,
-              ),
+                  obscureText: _obscureNewPassword,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Yeni şifreyi giriniz.';
+                    } else if (value == _oldPasswordController.text) {
+                      return 'Yeni şifre eski şifre ile aynı olamaz.';
+                    } else if (value.length < 5) {
+                      return 'Şifre en az 8 karakter uzunluğunda olmalıdır.';
+                    }
+
+                    return null;
+                  }),
               SizedBox(height: 10),
-              TextField(
+              TextFormField(
                 controller: _confirmPasswordController,
                 decoration: InputDecoration(
                   labelText: 'Yeni Şifreyi Onaylayın',
@@ -128,14 +144,25 @@ class _CreatePasswordPopupState extends State<CreatePasswordPopup> {
                   ),
                 ),
                 obscureText: _obscureConfirmPassword,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Şifreyi onaylayın.';
+                  } else if (value != _newPasswordController.text) {
+                    return 'Yeni şifreler eşleşmiyor.';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _changePassword,
-                child: Text('Şifreyi Değiştir'),
+                child: Text(
+                  'Şifreyi Değiştir',
+                  style: TextStyle(color: Colors.white),
+                ),
                 style: ElevatedButton.styleFrom(
-                  minimumSize: Size(double.infinity,
-                      36), // Full width button with smaller height
+                  backgroundColor: const Color.fromARGB(255, 4, 24, 58),
+                  minimumSize: Size(double.infinity, 36), // Full width button
                 ),
               ),
             ],

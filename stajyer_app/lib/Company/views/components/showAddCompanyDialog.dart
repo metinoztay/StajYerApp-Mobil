@@ -83,12 +83,12 @@ Future<bool> showAddCompanyDialog(BuildContext context) async {
       return SizedBox(
         width: 900,
         child: AlertDialog(
-          backgroundColor: background,
+          backgroundColor: Colors.white,
           title: Center(
               child: Text(
             'Şirket Ekle',
             style: TextStyle(
-                color: appbar, fontSize: 25, fontWeight: FontWeight.bold),
+                color: ilanCard, fontSize: 25, fontWeight: FontWeight.bold),
           )),
           content: SingleChildScrollView(
             child: Form(

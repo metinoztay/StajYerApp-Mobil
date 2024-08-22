@@ -10,20 +10,33 @@ class CompanysPage extends StatefulWidget {
 }
 
 class _CompanysPageState extends State<CompanysPage> {
+  String searchText = "";
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Padding(
-        //   padding: const EdgeInsets.only(left: 25.0, top: 20),
-        //   child: Text(
-        //     "Şirketler",
-        //     style: TextStyle(
-        //         color: button, fontSize: 25, fontWeight: FontWeight.bold),
-        //   ),
-        // ),
-        SirketCard(),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: TextField(
+            decoration: InputDecoration(
+              hintText: "Şirket ara...",
+              suffixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30.0),
+              ),
+            ),
+            onChanged: (value) {
+              setState(() {
+                searchText = value.toLowerCase();
+              });
+            },
+          ),
+        ),
+        Expanded(
+          child: SirketCard(searchText: searchText),
+        ),
       ],
     );
   }
