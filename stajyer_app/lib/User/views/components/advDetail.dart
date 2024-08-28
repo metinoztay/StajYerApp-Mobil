@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -54,8 +55,12 @@ class AdvCardDetail extends StatelessWidget {
                       child: Image.network(
                         advert.comp?.compLogo ??
                             'https://via.placeholder.com/150',
-                        width: 40, // Avatar boyutu
-                        height: 40, // Avatar boyutu
+                        width: 40, // Avatar size
+                        height: 40, // Avatar size
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.network(
+                              'https://via.placeholder.com/150'); // Fallback image
+                        },
                       ),
                     ),
                   ),
@@ -107,104 +112,131 @@ class AdvCardDetail extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                          top: 20.0, left: 20.0, right: 20.0, bottom: 20.0),
+                      padding: const EdgeInsets.all(0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Image.network(advert.advPhoto.toString()),
-                          sectionTitle('Açıklamaaa'),
-                          Text(
-                            advert.advJobDesc ?? 'Açıklama yok',
-                            style: TextStyle(color: Colors.white, fontSize: 14),
-                          ),
-                          SizedBox(height: 10),
-                          sectionTitle('Gereklilikler'),
-                          Text(
-                            advert.advQualifications ?? 'İlan açıklaması yok',
-                            style: TextStyle(color: Colors.white, fontSize: 14),
-                          ),
-                          SizedBox(height: 10),
-                          sectionTitle('Informations'),
-                          Text(
-                            advert.advAddInformation ?? 'İlan açıklaması yok',
-                            style: TextStyle(color: Colors.white, fontSize: 14),
-                          ),
-                          SizedBox(height: 20),
-                          Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
+                          ClipRRect(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20.0), // Üst sol köşe
+                                topRight: Radius.circular(20.0), // Üst sağ köşe
+                              ),
+                              child: Image.network(
+                                advert.advPhoto.toString(),
+                              )),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top: 20.0,
+                                left: 20.0,
+                                right: 20.0,
+                                bottom: 20.0),
+                            child: Column(
+                              children: [
+                                sectionTitle('İş Tanımı'),
+                                Text(
+                                  advert.advJobDesc ?? 'Açıklama yok',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 14),
+                                ),
+                                SizedBox(height: 10),
+                                sectionTitle('Aranan Nitelikler'),
+                                Text(
+                                  advert.advQualifications ??
+                                      'İlan açıklaması yok',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 14),
+                                ),
+                                SizedBox(height: 10),
+                                sectionTitle('Ek Bilgiler'),
+                                Text(
+                                  advert.advAddInformation ??
+                                      'İlan açıklaması yok',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 14),
+                                ),
+                                SizedBox(height: 20),
+                                Column(
                                   children: [
-                                    FaIcon(FontAwesomeIcons.map,
-                                        color: Colors.white),
-                                    SizedBox(width: 10),
-                                    Text(
-                                      advert.advAdressTitle ?? 'Konum yok',
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 14),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        children: [
+                                          FaIcon(FontAwesomeIcons.map,
+                                              color: Colors.white),
+                                          SizedBox(width: 10),
+                                          Text(
+                                            advert.advAdressTitle ??
+                                                'Konum yok',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 14),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        children: [
+                                          FaIcon(FontAwesomeIcons.briefcase,
+                                              color: Colors.white),
+                                          SizedBox(width: 10),
+                                          Text(
+                                            advert.advWorkType ??
+                                                'çalışma tipi yok(hybrid, yüzyüze)',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 14),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        children: [
+                                          FaIcon(FontAwesomeIcons.calendarCheck,
+                                              color: Colors.white),
+                                          SizedBox(width: 10),
+                                          Text(
+                                            advert.advExpirationDate ??
+                                                "son başvuru tarihi yok",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 14),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        children: [
+                                          FaIcon(
+                                            advert.advPaymentInfo == true
+                                                ? FontAwesomeIcons.dollarSign
+                                                : FontAwesomeIcons.dollarSign,
+                                            color: Colors.white,
+                                          ), // Ödeme bilgisi için
+                                          SizedBox(width: 10),
+                                          Text(
+                                            advert.advPaymentInfo == true
+                                                ? 'Ödeme mevcut'
+                                                : 'Ödeme yok',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 14),
+                                          ),
+                                          SizedBox(
+                                            width: 100,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  children: [
-                                    FaIcon(FontAwesomeIcons.briefcase,
-                                        color: Colors.white),
-                                    SizedBox(width: 10),
-                                    Text(
-                                      advert.advWorkType ??
-                                          'çalışma tipi yok(hybrid, yüzyüze)',
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 14),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  children: [
-                                    FaIcon(FontAwesomeIcons.calendarCheck,
-                                        color: Colors.white),
-                                    SizedBox(width: 10),
-                                    Text(
-                                      advert.advExpirationDate ??
-                                          "son başvuru tarihi yok",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 14),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  children: [
-                                    FaIcon(
-                                      advert.advPaymentInfo == true
-                                          ? FontAwesomeIcons.dollarSign
-                                          : FontAwesomeIcons.dollarSign,
-                                      color: Colors.white,
-                                    ), // Ödeme bilgisi için
-                                    SizedBox(width: 10),
-                                    Text(
-                                      advert.advPaymentInfo == true
-                                          ? 'Ödeme mevcut'
-                                          : 'Ödeme yok',
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 14),
-                                    ),
-                                    SizedBox(
-                                      width: 100,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -300,12 +332,15 @@ class AdvCardDetail extends StatelessWidget {
   Padding sectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Text(
-        title,
-        style: TextStyle(
-          color: button,
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
+      child: Container(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          title,
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 25,
+          ),
         ),
       ),
     );
@@ -339,12 +374,8 @@ class detailpagenavbar extends StatelessWidget {
 
     return Visibility(
       visible: advert.advIsActive ?? false,
-      child: SizedBox(
-        height: 90,
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 30.0, top: 20),
-          child: ApplicationButton(advertId: advertId),
-        ),
+      child: Expanded(
+        child: ApplicationButton(advertId: advertId),
       ),
     );
   }

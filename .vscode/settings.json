@@ -1,3 +1,5 @@
 {
-    "cmake.sourceDirectory": "C:/Users/DELL/Desktop/StajyerApp-Mobil/stajyer_app/linux"
+    "cmake.sourceDirectory": "C:/Users/DELL/Desktop/StajyerApp-Mobil/stajyer_app/linux",
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

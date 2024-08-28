@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
                         Padding(
                           padding: const EdgeInsets.all(30.0),
                           child: Text(
-                            "StajYerApp griş yapxwxs",
+                            "StajYerApp'e Hoş Geldin! ",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 30,
@@ -195,10 +195,10 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   TextButton(
                       onPressed: () {
-                         Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => CompanyLoginPage()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CompanyLoginPage()));
                       },
                       child: Text(
                         "Giriş Yap!",

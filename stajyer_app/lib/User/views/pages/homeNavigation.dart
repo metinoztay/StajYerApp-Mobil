@@ -35,7 +35,9 @@ class _homeNavigationState extends State<homeNavigation> {
       onWillPop: () async => false,
       child: Scaffold(
         backgroundColor: background,
-        appBar: happbar(),
+        appBar: _selectedIndex == 3
+            ? null
+            : happbar(), //profilde başka appbar kullanıcaz
         body: pages[_selectedIndex],
         bottomNavigationBar: HomeNavBar(
           onTabSelected: _onTabSelected,

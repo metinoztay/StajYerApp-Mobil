@@ -35,7 +35,7 @@ class _AdvCardBuilderState extends State<AdvCardBuilder> {
           } else if (!snapshot.hasData ||
               snapshot.data == null ||
               snapshot.data!.isEmpty) {
-            return Center(child: Text('No data available'));
+            return Center(child: Text('İlan Bulunmamaktadır!'));
           } else {
             return ListView.builder(
               itemCount: snapshot.data!.length,
@@ -61,6 +61,7 @@ class AdvCard extends StatefulWidget {
 
 class _AdvCardState extends State<AdvCard> {
   bool kayitlimi = false;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -68,121 +69,134 @@ class _AdvCardState extends State<AdvCard> {
       child: Stack(
         children: [
           SizedBox(
-              width: double.infinity,
-              height: 240,
-              child: Card(
-                color: ilanCard,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(18.0),
-                        child: Text(
-                          getShortDescription(widget.advert.advJobDesc, 19) ??
-                              'İlan açıklaması yoook',
-                          style: TextStyle(color: Colors.white),
-                          maxLines: 3,
-                        ),
+            width: double.infinity,
+            height: 240,
+            child: Card(
+              color: ilanCard,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Text(
+                        getShortDescription(widget.advert.advJobDesc, 19) ??
+                            'İlan açıklaması yoook',
+                        style: TextStyle(color: Colors.white),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 20.0),
-                        child: Row(
-                          children: [
-                            Row(
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Row(
                               children: [
                                 FaIcon(
                                   FontAwesomeIcons.map,
                                   color: Colors.white,
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(10.0),
+                                SizedBox(width: 10),
+                                Expanded(
                                   child: Text(
-                                      style: TextStyle(color: Colors.white),
-                                      widget.advert.advAdressTitle ??
-                                          'Konum yok'),
+                                    widget.advert.advAdressTitle ?? 'Konum yok',
+                                    style: TextStyle(color: Colors.white),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               ],
                             ),
-                            Spacer(),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        AdvCardDetail(advert: widget.advert),
-                                  ),
-                                );
-                              },
-                              child: Text("Detaylı Bilgi"),
-                            ),
-                            SaveButton(
-                              advertId: widget.advert.advertId != null
-                                  ? widget.advert.advertId!.toInt()
-                                  : 0,
-                              ColorSave: ColorsaveWhite,
-                            ),
-                          ],
+                          ),
+                          SizedBox(width: 20),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      AdvCardDetail(advert: widget.advert),
+                                ),
+                              );
+                            },
+                            child: Text("Detaylı Bilgi"),
+                            style: ElevatedButton.styleFrom(
+                                minimumSize: Size(120, 36), // Buton boyutu
+                                foregroundColor: ilanCard,
+                                backgroundColor: background),
+                          ),
+                          SaveButton(
+                            advertId: widget.advert.advertId != null
+                                ? widget.advert.advertId!.toInt()
+                                : 0,
+                            ColorSave: ColorsaveWhite,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            width: double.infinity,
+            height: 80,
+            child: Card(
+              color: ilanCard1,
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40, // Avatar boyutu
+                      height: 40, // Avatar boyutu
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white, // Boş alanlar için beyaz arka plan
+                      ),
+                      child: ClipOval(
+                        child: FittedBox(
+                          fit: BoxFit.cover,
+                          child: Image.network(
+                            widget.advert.comp?.compLogo ??
+                                'https://via.placeholder.com/150',
+                            width: 40, // Avatar size
+                            height: 40, // Avatar size
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.network(
+                                  'https://via.placeholder.com/150'); // Fallback image
+                            },
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              )),
-          SizedBox(
-              width: 380,
-              height: 80,
-              child: Card(
-                  color: ilanCard1,
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 40, // Avatar boyutu
-                          height: 40, // Avatar boyutu
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors
-                                .white, // Boş alanlar için beyaz arka plan
-                          ),
-                          child: ClipOval(
-                            child: FittedBox(
-                              fit: BoxFit.cover,
-                              child: Image.network(
-                                widget.advert.comp?.compLogo ??
-                                    'https://via.placeholder.com/150',
-                                width: 40, // Avatar boyutu
-                                height: 40, // Avatar boyutu
-                              ),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                getShortDescription(
-                                    widget.advert.comp?.compName,
-                                    4), // 'Şirket Adı Yok' varsayılan değeri getShortDescription içinde ele alındığı için burada ihtiyaç yok
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              Text(
-                                widget.advert.advTitle ?? 'İlan Başlığı Yok',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
                     ),
-                  ))),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            getShortDescription(
+                                widget.advert.comp?.compName, 4),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          Text(
+                            widget.advert.advTitle ?? 'İlan Başlığı Yok',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

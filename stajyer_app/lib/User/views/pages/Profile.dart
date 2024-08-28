@@ -1,7 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:crypto/crypto.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stajyer_app/User/models/UserModel.dart';
@@ -89,6 +93,7 @@ class _ProfileState extends State<Profile> {
           };
 
           await userService.updateUser(userId, updatedData);
+          _getUserInfo();
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -123,7 +128,10 @@ class _ProfileState extends State<Profile> {
 
   void _editInfo(BuildContext context, String title, String initialValue,
       String fieldName) {
-    TextEditingController controller = TextEditingController(text: "");
+    final _formKey = GlobalKey<FormState>();
+    final TextEditingController controller =
+        TextEditingController(text: initialValue);
+    String? errorText;
 
     showDialog(
       context: context,
@@ -131,23 +139,51 @@ class _ProfileState extends State<Profile> {
         return AlertDialog(
           backgroundColor: Colors.white,
           title: Text("Güncelle", style: TextStyle(color: ilanCard)),
-          content: fieldName == "udesc"
-              ? Container(
-                  width: double.maxFinite,
-                  child: TextField(
-                    controller: controller,
-                    maxLines:
-                        8, // Daha büyük bir text alanı için satır sayısını artırdık
-                    decoration: InputDecoration(
-                      labelText: title,
-                      border: OutlineInputBorder(),
+          content: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: controller,
+                  keyboardType: fieldName == "uemail"
+                      ? TextInputType.emailAddress
+                      : fieldName == "uphone"
+                          ? TextInputType.phone
+                          : TextInputType.text,
+                  decoration: InputDecoration(
+                    labelText: title,
+                    errorText: errorText,
+                  ),
+                  maxLines: fieldName == "udesc"
+                      ? 8
+                      : 1, // "udesc" için daha fazla satır
+                  minLines: fieldName == "udesc"
+                      ? 4
+                      : 1, // Minimum satır sayısını ayarl
+                  validator: (value) {
+                    if (fieldName == "uemail" &&
+                        (value == null || !isValidEmail(value))) {
+                      return 'Geçerli bir e-posta adresi girin.';
+                    }
+                    if (fieldName == "uphone" &&
+                        (value == null || !isValidPhoneNumber(value))) {
+                      return 'Telefon numarası 11 haneli olmalıdır.';
+                    }
+                    return null;
+                  },
+                ),
+                if (errorText != null) // Hata mesajı varsa göster
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      errorText!,
+                      style: TextStyle(color: Colors.red),
                     ),
                   ),
-                )
-              : TextField(
-                  controller: controller,
-                  decoration: InputDecoration(labelText: title),
-                ),
+              ],
+            ),
+          ),
           actions: [
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -155,7 +191,15 @@ class _ProfileState extends State<Profile> {
                 foregroundColor: Colors.white,
               ),
               onPressed: () async {
+                // Formun doğruluğunu kontrol et
+                if (!_formKey.currentState!.validate()) {
+                  return; // Eğer form geçerli değilse işlemi durdur
+                }
+
                 final newValue = controller.text;
+
+                // Hata mesajlarını sıfırla
+                errorText = null;
 
                 SharedPreferences prefs = await SharedPreferences.getInstance();
                 int? userId = prefs.getInt('userId');
@@ -244,6 +288,7 @@ class _ProfileState extends State<Profile> {
   }
 
   void _changePassword(BuildContext context) {
+    final _formKey = GlobalKey<FormState>();
     TextEditingController oldPasswordController = TextEditingController();
     TextEditingController newPasswordController = TextEditingController();
     TextEditingController confirmPasswordController = TextEditingController();
@@ -254,25 +299,51 @@ class _ProfileState extends State<Profile> {
         return AlertDialog(
           backgroundColor: Colors.white,
           title: Text("Şifre Değiştir", style: TextStyle(color: ilanCard)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: oldPasswordController,
-                obscureText: true,
-                decoration: InputDecoration(labelText: "Eski Şifre"),
-              ),
-              TextField(
-                controller: newPasswordController,
-                obscureText: true,
-                decoration: InputDecoration(labelText: "Yeni Şifre"),
-              ),
-              TextField(
-                controller: confirmPasswordController,
-                obscureText: true,
-                decoration: InputDecoration(labelText: "Yeni Şifre Tekrar"),
-              ),
-            ],
+          content: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: oldPasswordController,
+                  obscureText: true,
+                  decoration: InputDecoration(labelText: "Eski Şifre"),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Eski şifre gereklidir';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 8),
+                TextFormField(
+                  controller: newPasswordController,
+                  obscureText: true,
+                  decoration: InputDecoration(labelText: "Yeni Şifre"),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Yeni şifre gereklidir';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 8),
+                TextFormField(
+                  controller: confirmPasswordController,
+                  obscureText: true,
+                  decoration: InputDecoration(labelText: "Yeni Şifre Tekrar"),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Yeni şifre tekrar gereklidir';
+                    }
+                    if (value != newPasswordController.text) {
+                      return 'Yeni şifreler eşleşmiyor';
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
           ),
           actions: [
             ElevatedButton(
@@ -281,80 +352,63 @@ class _ProfileState extends State<Profile> {
                 foregroundColor: Colors.white,
               ),
               onPressed: () async {
-                final oldPassword = oldPasswordController.text;
-                final newPassword = newPasswordController.text;
-                final confirmPassword = confirmPasswordController.text;
+                if (_formKey.currentState?.validate() ?? false) {
+                  final oldPassword = oldPasswordController.text;
+                  final newPassword = newPasswordController.text;
 
-                if (newPassword != confirmPassword) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Yeni şifreler eşleşmiyor.'),
-                    ),
-                  );
-                  return;
-                }
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  int? userId = prefs.getInt('userId');
 
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                int? userId = prefs.getInt('userId');
+                  if (userId != null) {
+                    try {
+                      final response = await http.put(
+                        Uri.parse(
+                            'http://stajyerapp.runasp.net/api/User/ChangePassword'), // API URL'yi buraya girin
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: jsonEncode({
+                          'userId': userId,
+                          'oldPassword': oldPassword,
+                          'newPassword': newPassword,
+                        }),
+                      );
 
-                if (userId != null) {
-                  UserService userService = UserService();
+                      // Yanıtın durum kodunu ve gövdesini loglayın
+                      print('Status code: ${response.statusCode}');
+                      print('Response body: ${response.body}');
 
-                  try {
-                    UserModel currentUser =
-                        await userService.getUserById(userId);
-
-                    if (currentUser.upassword != oldPassword) {
+                      if (response.statusCode == 204) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Şifreniz başarıyla güncellendi.'),
+                          ),
+                        );
+                        Navigator.of(context).pop();
+                      } else {
+                        print(response.body);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                'Şifre değiştirme sırasında bir hata oluştu: ${response.body}'),
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      print(e.toString());
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Eski şifre yanlış.'),
+                          content: Text(
+                              'Şifre değiştirme sırasında bir hata oluştu: ${e.toString()}'),
                         ),
                       );
-                      return;
                     }
-
-                    Map<String, dynamic> updatedData = {
-                      'userId': userId,
-                      'uname': currentUser.uname,
-                      'usurname': currentUser.usurname,
-                      'uemail': currentUser.uemail,
-                      'upassword': newPassword,
-                      'uphone': currentUser.uphone,
-                      'ubirthdate': currentUser.ubirthdate,
-                      'ugender': currentUser.ugender,
-                      'ulinkedin': currentUser.ulinkedin,
-                      'ucv': currentUser.ucv,
-                      'ugithub': currentUser.ugithub,
-                      'udesc': currentUser.udesc,
-                      'uprofilephoto': currentUser.uprofilephoto,
-                      'uisactive': currentUser.uisactive,
-                      'uisEmailVerified': currentUser.uisEmailVerified,
-                      'uisPhoneVerified': currentUser.uisPhoneVerified,
-                    };
-
-                    await userService.updateUser(userId, updatedData);
-
-                    _getUserInfo();
-
+                  } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Şifreniz başarıyla güncellendi.'),
-                      ),
-                    );
-
-                    Navigator.of(context).pop();
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            'Şifre değiştirme sırasında bir hata oluştu: $e'),
-                      ),
+                      SnackBar(content: Text('Kullanıcı ID bulunamadı')),
                     );
                   }
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Kullanıcı ID bulunamadı')),
-                  );
                 }
               },
               child: Text(
@@ -375,11 +429,41 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  String hashPassword(String password) {
+    final bytes = utf8.encode(password); // Şifreyi byte dizisine çevirin
+    final digest = sha256.convert(bytes); // SHA-256 hash'ini hesaplayın
+    return digest.toString(); // Hash'lenmiş şifreyi döndürün
+  }
+
+  void selectedItem(BuildContext context, int item) {
+    switch (item) {
+      case 0:
+        // Çıkış yapma işlemleri
+        print("Çıkış Yap");
+        break;
+      case 1:
+        // Şifre değiştirme işlemleri
+        print("Şifre Değiştir");
+        break;
+    }
+  }
+
   void _showAddProjectDialog() async {
     bool? result = await showAddProjectDialog(context);
     if (result ?? false) {
       _getUserInfo();
     }
+  }
+
+  bool isValidEmail(String email) {
+    final RegExp emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+    return emailRegex.hasMatch(email);
+  }
+
+  bool isValidPhoneNumber(String phone) {
+    final RegExp phoneRegex =
+        RegExp(r'^\d{11}$'); // Tam olarak 11 haneli telefon numarası
+    return phoneRegex.hasMatch(phone);
   }
 
   @override
@@ -448,6 +532,90 @@ class _ProfileState extends State<Profile> {
     ];
 
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        automaticallyImplyLeading: false, // Geri butonunu kaldır
+
+        title: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Text(
+                "Profil",
+                style: TextStyle(
+                    color: button, fontSize: 25, fontWeight: FontWeight.normal),
+              ),
+            )
+          ],
+        ),
+
+        actions: [
+          PopupMenuButton<int>(
+            offset: Offset(0.0, 50),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(8.0),
+                bottomRight: Radius.circular(8.0),
+                topLeft: Radius.circular(8.0),
+                topRight: Radius.circular(8.0),
+              ),
+            ),
+            color: Colors.white,
+            icon: Icon(Icons.settings),
+            onSelected: (item) => selectedItem(context, item),
+            itemBuilder: (context) => [
+              PopupMenuItem<int>(
+                value: 0,
+                child: SizedBox(
+                  width: 200, // Butonun genişliğini belirli bir değere sabitle
+                  child: Column(children: [
+                    GestureDetector(
+                      onTap: () {
+                        // Menüden çık
+                        _logoOut(); // Çıkış yapma fonksiyonunu çalıştır
+                      },
+                      child: Row(
+                        children: [
+                          Icon(Icons.logout),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Text("Çıkış Yap"),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Divider(height: 20, color: Colors.grey), // Çizgi ekleme
+                  ]),
+                ),
+              ),
+              PopupMenuItem<int>(
+                value: 1,
+                child: SizedBox(
+                  width: 200, // Butonun genişliğini belirli bir değere sabitle
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      _changePassword(context);
+                    },
+                    child: Row(
+                      children: [
+                        Icon(Icons.lock),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Text("Şifre Değiştir"),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
       body: Center(
         child: isLoading
             ? CircularProgressIndicator()
@@ -456,13 +624,13 @@ class _ProfileState extends State<Profile> {
                     child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(5.0),
+                        padding: const EdgeInsets.all(3.0),
                         child: Container(
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: ilanCard,
                             borderRadius:
-                                BorderRadius.all(Radius.circular(15.0)),
+                                BorderRadius.all(Radius.circular(10.0)),
                           ),
                           padding: EdgeInsets.all(20.0),
                           child: Column(
@@ -481,8 +649,11 @@ class _ProfileState extends State<Profile> {
                                       child: FittedBox(
                                         fit: BoxFit.cover,
                                         child: Image.network(
-                                          user?.uprofilephoto ??
-                                              'https://via.placeholder.com/150',
+                                          (user?.uprofilephoto ==
+                                                  'http://stajyerapp.runasp.net/Photos/UserProfilePhotos/blank_profile_photo.png')
+                                              ? 'https://via.placeholder.com/150'
+                                              : user?.uprofilephoto ??
+                                                  'https://via.placeholder.com/150',
                                           width: 90,
                                           height: 90,
                                         ),
@@ -500,6 +671,10 @@ class _ProfileState extends State<Profile> {
                                   ),
                                 ),
                                 SizedBox(height: 20),
+                                Divider(
+                                  color: Colors.white, // Çizginin rengi
+                                  thickness: 1, // Çizginin kalınlığı
+                                ),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -544,13 +719,20 @@ class _ProfileState extends State<Profile> {
                                             ),
                                           ),
                                           IconButton(
-                                            icon: Icon(Icons.edit,
-                                                color: Colors.white),
+                                            icon: Icon(
+                                              Icons.edit,
+                                              color: Colors.white,
+                                              size: 20,
+                                            ),
                                             onPressed: item.onEdit,
                                           ),
                                         ],
                                       );
                                     }).toList(),
+                                    Divider(
+                                      color: Colors.white, // Çizginin rengi
+                                      thickness: 1, // Çizginin kalınlığı
+                                    ),
                                     ExpansionTile(
                                       title: Text(
                                         "Projeler",
@@ -566,6 +748,10 @@ class _ProfileState extends State<Profile> {
                                         color: Colors
                                             .white, // İstediğiniz rengi buraya koyabilirsiniz
                                       ),
+                                    ),
+                                    Divider(
+                                      color: Colors.white, // Çizginin rengi
+                                      thickness: 1, // Çizginin kalınlığı
                                     ),
                                     SizedBox(height: 10),
                                     ExpansionTile(
@@ -584,6 +770,10 @@ class _ProfileState extends State<Profile> {
                                             .white, // İstediğiniz rengi buraya koyabilirsiniz
                                       ),
                                     ),
+                                    Divider(
+                                      color: Colors.white, // Çizginin rengi
+                                      thickness: 1, // Çizginin kalınlığı
+                                    ),
                                     SizedBox(height: 10),
                                     ExpansionTile(
                                       title: Text(
@@ -600,6 +790,10 @@ class _ProfileState extends State<Profile> {
                                         color: Colors
                                             .white, // İstediğiniz rengi buraya koyabilirsiniz
                                       ),
+                                    ),
+                                    Divider(
+                                      color: Colors.white, // Çizginin rengi
+                                      thickness: 1, // Çizginin kalınlığı
                                     ),
                                     SizedBox(height: 10),
                                     ExpansionTile(
@@ -618,36 +812,43 @@ class _ProfileState extends State<Profile> {
                                             .white, // İstediğiniz rengi buraya koyabilirsiniz
                                       ),
                                     ),
-                                    SizedBox(height: 10),
                                   ],
                                 ),
                               ]),
                         ),
                       ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                        ),
-                        onPressed: () {
-                          _changePassword(context);
-                        },
-                        child: const Text("Şifre Değiştir"),
-                      ),
-                      Center(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: Size(100, 40),
-                            backgroundColor: Colors.white,
-                            foregroundColor: ilanCard,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                          ),
-                          onPressed: _logoOut,
-                          child: Text("Çıkış Yap"),
-                        ),
-                      ),
+                      // SizedBox(
+                      //   width: double.infinity,
+                      //   child: ElevatedButton(
+                      //     style: ElevatedButton.styleFrom(
+                      //       backgroundColor: ilanCard,
+                      //       foregroundColor: Colors.white,
+                      //     ),
+                      //     onPressed: () {
+                      //       _changePassword(context);
+                      //     },
+                      //     child: const Text("Şifre Değiştir"),
+                      //   ),
+                      // ),
+                      // SizedBox(
+                      //   width: double
+                      //       .infinity, // Ensures the width takes up the full available space
+                      //   child: Center(
+                      //     child: ElevatedButton(
+                      //       style: ElevatedButton.styleFrom(
+                      //         minimumSize: Size(double.infinity,
+                      //             40), // Make the button's width match its parent
+                      //         backgroundColor: Colors.red,
+                      //         foregroundColor: Colors.white,
+                      //         shape: RoundedRectangleBorder(
+                      //           borderRadius: BorderRadius.circular(30.0),
+                      //         ),
+                      //       ),
+                      //       onPressed: _logoOut,
+                      //       child: Text("Çıkış Yap"),
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ))
                 : Text('Kullanıcı bulunamadı'),

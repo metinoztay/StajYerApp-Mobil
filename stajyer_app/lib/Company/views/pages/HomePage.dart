@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stajyer_app/Company/models/Advertisement.dart';
@@ -72,16 +73,19 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
     if (advId != null) {
       try {
         await CompanyAdvertService().deleteAdvert(advId);
-        _fetchAdverts();
         setState(() {
-          _allAdverts.removeWhere((adv) => adv.advertId == advId);
+          // İlanı aktif ilanlardan çıkar
           _activeAdverts.removeWhere((adv) => adv.advertId == advId);
+
+          // İlanı tüm ilanlar listesine taşımak yerine silmek istiyorsanız,
+          // aşağıdaki satırı kullanarak tüm ilanlardan da çıkarabilirsiniz.
+          // _allAdverts.removeWhere((adv) => adv.advertId == advId);
         });
       } catch (error) {
-        print("ilan silniriken hata : $error");
+        print("İlan silinirken hata: $error");
       }
     } else {
-      print("ilan id bulunamadı");
+      print("İlan ID bulunamadı");
     }
   }
 
@@ -125,20 +129,23 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
   Widget _buildAdvertsList(
       List<Advertisement> adverts, String logo, String companyName) {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(20),
-      child: Column(
-        children: adverts.map((advert) {
-          return buildJobCard(
-              worktype: advert.advWorkType ?? "No Work Type",
-              title: advert.advTitle ?? "No Title",
-              description: advert.advJobDesc ?? "No Description",
-              location: advert.advAdressTitle ?? "No Location",
-              isActive: advert.advIsActive ?? false,
-              count: advert.advAppCount ?? "",
-              advert: advert);
-        }).toList(),
-      ),
-    );
+        padding: EdgeInsets.all(20),
+        child: adverts.isNotEmpty
+            ? Column(
+                children: adverts.map((advert) {
+                  return buildJobCard(
+                      worktype: advert.advWorkType ?? "No Work Type",
+                      title: advert.advTitle ?? "No Title",
+                      description: advert.advJobDesc ?? "No Description",
+                      location: advert.advAdressTitle ?? "No Location",
+                      isActive: advert.advIsActive ?? false,
+                      count: advert.advAppCount ?? "",
+                      advert: advert);
+                }).toList(),
+              )
+            : Center(
+                child: Text(" İlanınız bulunmamaktadır"),
+              ));
   }
 
   Widget buildJobCard({
@@ -264,7 +271,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
             ),
           ),
           SizedBox(
-            width: double.infinity, // Use double.infinity for width
+            width: double.infinity,
             height: 80,
             child: Card(
               color: isActive ? companyCard2 : Colors.grey[400],
@@ -272,7 +279,7 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                 padding: const EdgeInsets.all(10.0),
                 child: Row(
                   children: [
-                    Flexible(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -281,26 +288,28 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                             title,
                             style: TextStyle(color: Colors.white),
                             overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                           Text(
                             location,
                             style: TextStyle(color: Colors.white),
                             overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                         ],
                       ),
                     ),
-                    SizedBox(width: 130),
                     IconButton(
-                        onPressed: () {
-                          _deleteAdvert(advert.advertId);
-                        },
-                        icon: Icon(Icons.delete, color: Colors.white))
+                      onPressed: () {
+                        _deleteAdvert(advert.advertId);
+                      },
+                      icon: Icon(Icons.delete, color: Colors.white),
+                    ),
                   ],
                 ),
               ),
             ),
-          ),
+          )
         ],
       ),
     );

@@ -29,10 +29,11 @@ class _HomeNavBarState extends State<HomeNavBar> {
       ),
       child: BottomNavigationBar(
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Companies'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Saved'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Anasayfa'),
+          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Şirketler'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.favorite), label: 'İlanlarım'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
         currentIndex: _selectedIndex,
         onTap: (index) {

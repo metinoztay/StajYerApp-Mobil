@@ -4,6 +4,7 @@ import 'package:stajyer_app/User/models/UserRegisterModel.dart';
 import 'package:stajyer_app/User/services/api/UserRegisterService.dart';
 import 'package:stajyer_app/User/utils/colors.dart';
 import 'package:intl/intl.dart';
+import 'package:stajyer_app/User/views/pages/loginPage.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -294,6 +295,10 @@ class _RegisterPageState extends State<RegisterPage> {
                             SnackBar(content: Text('Başarıyla kaydolundu')),
                           );
                           _formKey.currentState!.reset();
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginPage()));
                         }
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(

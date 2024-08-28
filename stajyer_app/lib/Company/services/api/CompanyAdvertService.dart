@@ -111,7 +111,13 @@ class CompanyAdvertService {
       if (response.statusCode == 200) {
         var responseData = await response.stream.toBytes();
         var result = json.decode(String.fromCharCodes(responseData));
-        return result['fileUrl'];
+
+        if (result.containsKey('fileUrl')) {
+          return result['fileUrl'];
+        } else {
+          print('Yanıt JSON\'unda "fileUrl" bulunamadı.');
+          return null;
+        }
       } else {
         print('Upload failed: ${response.statusCode}');
         final responseBody = await response.stream.bytesToString();

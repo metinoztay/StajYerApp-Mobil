@@ -79,14 +79,14 @@ class _UserEducationWidgetState extends State<UserEducationWidget> {
           children: [
             Text(
               "Eğitimleriniz bulunmamaktadır.",
-              style: TextStyle(color: ilanCard),
+              style: TextStyle(color: Colors.white),
             ),
             SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(200, 40),
-                backgroundColor: ilanCard,
-                foregroundColor: Colors.white,
+                minimumSize: Size(100, 40),
+                backgroundColor: Colors.white,
+                foregroundColor: buttonColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0),
                 ),

@@ -673,6 +673,7 @@ class _ApplicationButtonState extends State<ApplicationButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
+      style: ElevatedButton.styleFrom(padding: EdgeInsets.all(0)),
       onPressed:
           _isButtonDisabled ? null : () => _showApplicationDialog(context),
       child: Text(
@@ -770,18 +771,21 @@ class _ApplicationFormState extends State<ApplicationForm> {
           ),
           SizedBox(height: 16),
           Text(
-              "Başvuruda kullanılacak bilgileri profilden düzenleyebilirsiniz"),
+              "Başvuruda kullanılacak bilgileri profilden düzenleyebilirsiniz..."),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               TextButton(
-                child: Text('İptal'),
+                child: Text('İptal', style: TextStyle(color: Colors.red)),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
               ),
               TextButton(
-                child: Text('Gönder'),
+                child: Text(
+                  'Gönder',
+                  style: TextStyle(color: ilanCard),
+                ),
                 onPressed: _submitApplication,
               ),
             ],

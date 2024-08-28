@@ -19,4 +19,8 @@ class Endpoints {
       '$baseUrl/Application/ListAdvertsApplications';
   static const String ApplicationsByAdvId =
       '$baseUrl/Application/ListAdvertsApplications';
+  static const String CompForgotPasswordUrl =
+      '$baseUrl/CompanyUser/ForgotPassword';
+  static const String CompResetPasswordUrl =
+      '$baseUrl/CompanyUser/ResetPassword';
 }

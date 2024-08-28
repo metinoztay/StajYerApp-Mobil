@@ -132,6 +132,7 @@ Future<bool> showAddCompanyDialog(BuildContext context) async {
                       labelText: 'Şirket hakkında bilgi veriniz',
                       prefixIcon: Icon(Icons.info), // Bilgi simgesi
                     ),
+                    maxLines: 5,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Şirket hakkında bilgi veriniz';

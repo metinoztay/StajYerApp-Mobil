@@ -77,14 +77,14 @@ class _UserCertificateWidgetState extends State<UserCertificateWidget> {
           children: [
             Text(
               "Sertifikalarınız bulunmamaktadır.",
-              style: TextStyle(color: buttonColor),
+              style: TextStyle(color: Colors.white),
             ),
             SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(200, 40),
-                backgroundColor: ilanCard,
-                foregroundColor: Colors.white,
+                minimumSize: Size(100, 40),
+                backgroundColor: Colors.white,
+                foregroundColor: buttonColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0),
                 ),
@@ -106,14 +106,6 @@ class _UserCertificateWidgetState extends State<UserCertificateWidget> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Sertifikalarım',
-                    style: TextStyle(
-                      color: buttonColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       minimumSize: Size(150, 40),

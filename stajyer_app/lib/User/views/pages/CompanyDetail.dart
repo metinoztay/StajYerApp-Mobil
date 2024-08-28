@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -8,6 +9,7 @@ import 'package:stajyer_app/User/services/api/CompanyDetailService.dart';
 import 'package:stajyer_app/User/services/api/homeAdvService.dart';
 import 'package:stajyer_app/User/utils/colors.dart';
 import 'package:stajyer_app/User/views/components/advDetail.dart';
+import 'package:stajyer_app/User/views/components/saveButton.dart';
 
 class CompanyDetail extends StatefulWidget {
   final CompanyModel company;
@@ -36,6 +38,13 @@ class _CompanyDetailState extends State<CompanyDetail> {
       advPaymentInfo: companyAdvModel.advPaymentInfo,
       advDepartment: companyAdvModel.advDepartment,
       advertId: companyAdvModel.advertId,
+      comp: companyAdvModel.compId != null
+          ? Company(
+              compId: companyAdvModel.compId,
+              compLogo: companyAdvModel.compLogo,
+              compName: companyAdvModel.compName // Bu alanı buraya ekledik
+              )
+          : null,
     );
   }
 
@@ -234,73 +243,67 @@ class _CompanyDetailState extends State<CompanyDetail> {
       child: Stack(
         children: [
           SizedBox(
-            width: 380,
-            height: 250,
+            width: double.infinity,
+            height: 240,
             child: Card(
-              color:
-                  isActive ? companyCard1 : Colors.grey[300], // Arka plan rengi
+              color: companyCard1,
               child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 20.0, top: 90.0, right: 20.0, bottom: 20.0),
+                padding: const EdgeInsets.only(left: 20.0),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            description,
-                            style: TextStyle(
-                              color: isActive ? Colors.white : Colors.black,
-                            ),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
+                    Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Text(
+                        getShortDescription(description, 19) ??
+                            'İlan açıklaması yoook',
+                        style: TextStyle(color: Colors.white),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    Row(
-                      children: [
-                        FaIcon(
-                          FontAwesomeIcons.map,
-                          color: isActive ? Colors.white : Colors.black,
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            location,
-                            style: TextStyle(
-                              color: isActive ? Colors.white : Colors.black,
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Row(
+                              children: [
+                                FaIcon(
+                                  FontAwesomeIcons.map,
+                                  color: Colors.white,
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    location ?? 'Konum yok',
+                                    style: TextStyle(color: Colors.white),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
                             ),
-                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Container(
-                      alignment: Alignment.bottomRight,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  AdvCardDetail(advert: advert),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          "Detaylı Bilgi",
-                          style: TextStyle(
-                            color: isActive ? Colors.white : Colors.black,
+                          SizedBox(width: 20),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      AdvCardDetail(advert: advert),
+                                ),
+                              );
+                            },
+                            child: Text("Detaylı Bilgi"),
+                            style: ElevatedButton.styleFrom(
+                                minimumSize: Size(120, 36), // Buton boyutu
+                                foregroundColor: companyCard1,
+                                backgroundColor: background),
                           ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              isActive ? companyCard2 : Colors.grey,
-                        ),
+                          SizedBox(width: 20),
+                        ],
                       ),
                     ),
                   ],

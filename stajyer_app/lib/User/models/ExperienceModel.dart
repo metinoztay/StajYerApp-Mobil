@@ -34,7 +34,7 @@ class ExperienceModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['expId'] = this.expId;
+    data['expId'] = expId ?? 0;
     data['userId'] = this.userId;
     data['expPosition'] = this.expPosition;
     data['expCompanyName'] = this.expCompanyName;

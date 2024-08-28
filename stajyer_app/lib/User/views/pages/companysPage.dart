@@ -17,21 +17,28 @@ class _CompanysPageState extends State<CompanysPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        SizedBox(
+          height: 10,
+        ),
         Padding(
           padding: const EdgeInsets.all(10.0),
-          child: TextField(
-            decoration: InputDecoration(
-              hintText: "Şirket ara...",
-              suffixIcon: Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30.0),
+          child: Container(
+            width: double.infinity, // Genişlik ayarı
+            height: 40,
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: "Şirket ara...",
+                suffixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
               ),
+              onChanged: (value) {
+                setState(() {
+                  searchText = value.toLowerCase();
+                });
+              },
             ),
-            onChanged: (value) {
-              setState(() {
-                searchText = value.toLowerCase();
-              });
-            },
           ),
         ),
         Expanded(

@@ -31,6 +31,7 @@ class _EditAdvertPageState extends State<EditAdvertPage> {
   late TextEditingController _appCountController;
   String? _selectedWorkType;
   DateTime? _expFinishDate;
+  bool? _advPaymentInfo;
 
   @override
   void initState() {
@@ -55,6 +56,7 @@ class _EditAdvertPageState extends State<EditAdvertPage> {
         TextEditingController(text: widget.advert.advAppCount);
     _selectedWorkType =
         widget.advert.advWorkType; // Mevcut çalışma tipi değerini ayarla
+    _advPaymentInfo = widget.advert.advPaymentInfo;
   }
 
   @override
@@ -202,6 +204,16 @@ class _EditAdvertPageState extends State<EditAdvertPage> {
                   maxLines: 5,
                 ),
                 // Eski resim URL'si burada gösteriliyor
+                TextFormField(
+                  controller: _addressTitleController,
+                  decoration: InputDecoration(labelText: 'İl/İlçe'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Adres başlığı gerekli';
+                    }
+                    return null;
+                  },
+                ),
 
                 DropdownButtonFormField<String>(
                   decoration: InputDecoration(
@@ -277,16 +289,7 @@ class _EditAdvertPageState extends State<EditAdvertPage> {
                     return null;
                   },
                 ),
-                TextFormField(
-                  controller: _addressTitleController,
-                  decoration: InputDecoration(labelText: 'Adres Başlığı'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Adres başlığı gerekli';
-                    }
-                    return null;
-                  },
-                ),
+
                 TextFormField(
                   controller: _jobDescController,
                   decoration: InputDecoration(labelText: 'İş Tanımı'),
@@ -322,6 +325,36 @@ class _EditAdvertPageState extends State<EditAdvertPage> {
                   },
                   minLines: 1,
                   maxLines: 20,
+                ),
+                DropdownButtonFormField<bool>(
+                  decoration: InputDecoration(
+                    labelText: 'Ücret ödemesi var mı',
+                  ),
+                  dropdownColor: Colors.white,
+                  icon: Icon(Icons.arrow_drop_down, color: ilanCard),
+                  iconSize: 24,
+                  value: _advPaymentInfo,
+                  items: [
+                    DropdownMenuItem(
+                      value: false,
+                      child: Row(
+                        children: [
+                          Text('Hayır', style: TextStyle(color: Colors.black)),
+                        ],
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: true,
+                      child: Row(
+                        children: [
+                          Text('Evet', style: TextStyle(color: Colors.black)),
+                        ],
+                      ),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    _advPaymentInfo = value;
+                  },
                 ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width,

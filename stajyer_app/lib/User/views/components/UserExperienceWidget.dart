@@ -82,9 +82,9 @@ class _UserExperienceWidgetState extends State<UserExperienceWidget> {
             SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(200, 40),
-                backgroundColor: ilanCard,
-                foregroundColor: Colors.white,
+                minimumSize: Size(100, 40),
+                backgroundColor: Colors.white,
+                foregroundColor: ilanCard,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0),
                 ),

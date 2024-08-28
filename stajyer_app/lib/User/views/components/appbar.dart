@@ -34,11 +34,11 @@ class happbar extends StatelessWidget implements PreferredSizeWidget {
         ),
 
         actions: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: IconButton(
-                onPressed: () {}, icon: Icon(Icons.notifications_none)),
-          )
+          // Padding(
+          //   padding: const EdgeInsets.all(10.0),
+          //   child: IconButton(
+          //       onPressed: () {}, icon: Icon(Icons.notifications_none)),
+          // )
         ],
       ),
     );

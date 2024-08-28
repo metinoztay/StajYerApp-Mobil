@@ -108,12 +108,12 @@ class _UserProjectsWidgetState extends State<UserProjectsWidget> {
           children: [
             Text(
               "Projeniz bulunmamaktadır",
-              style: TextStyle(color: buttonColor),
+              style: TextStyle(color: Colors.white),
             ),
             SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(200, 40),
+                minimumSize: Size(100, 40),
                 backgroundColor: Colors.white,
                 foregroundColor: buttonColor,
                 shape: RoundedRectangleBorder(

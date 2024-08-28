@@ -320,7 +320,7 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
                       ),
                       TextFormField(
                         controller: _compAdressTitleController,
-                        decoration: InputDecoration(labelText: 'Adres Başlığı'),
+                        decoration: InputDecoration(labelText: 'İl/İlçe'),
                       ),
                       TextFormField(
                         controller: _compSektorController,
@@ -345,6 +345,9 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
                         controller: _compDescController,
                         decoration:
                             InputDecoration(labelText: 'Şirket Açıklaması'),
+                        maxLines: null, // Uzun metinler için sınırsız satır
+                        keyboardType: TextInputType
+                            .multiline, // Metin girişi için çok satırlı klavye
                       ),
                       TextFormField(
                         controller: _compEmployeeCountController,

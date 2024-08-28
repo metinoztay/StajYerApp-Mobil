@@ -13,6 +13,8 @@ class CompanyAdvModel {
   String? advJobDesc;
   String? advQualifications;
   String? advAddInformation;
+  String? compLogo;
+  String? compName; // Bu alanı ekleyin
 
   CompanyAdvModel(
       {this.advertId,
@@ -28,7 +30,9 @@ class CompanyAdvModel {
       this.advPaymentInfo,
       this.advJobDesc,
       this.advQualifications,
-      this.advAddInformation});
+      this.advAddInformation,
+      this.compLogo,
+      this.compName}); // Bu alana constructor'da yer verin
 
   CompanyAdvModel.fromJson(Map<String, dynamic> json) {
     advertId = json['advertId'];
@@ -45,6 +49,8 @@ class CompanyAdvModel {
     advJobDesc = json['advJobDesc'];
     advQualifications = json['advQualifications'];
     advAddInformation = json['advAddInformation'];
+    compLogo = json['compLogo'];
+    compName = json['compName']; // JSON'dan alınan bu alanı ekleyin
   }
 
   Map<String, dynamic> toJson() {
@@ -63,6 +69,8 @@ class CompanyAdvModel {
     data['advJobDesc'] = this.advJobDesc;
     data['advQualifications'] = this.advQualifications;
     data['advAddInformation'] = this.advAddInformation;
+    data['compLogo'] = this.compLogo;
+    data['compName'] = this.compName; // Bu alanı ekleyin
     return data;
   }
 }
