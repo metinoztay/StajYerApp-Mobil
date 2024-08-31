@@ -2,7 +2,7 @@ class EducationModel {
   final int eduId;
   final int userId;
   final int uniId;
-  String? uniName; //üni name i aldığımız için finaldan cıkardık
+  String? uniName; // uniName'i nullable yapmışsınız
   final int progId;
   final String? eduStartDate;
   final String? eduFinishDate;
@@ -28,7 +28,7 @@ class EducationModel {
       eduId: json['eduId'],
       userId: json['userId'],
       uniId: json['uniId'],
-      uniName: json['uniName'],
+      uniName: json['uniName'], // uniName'i JSON'dan al
       progId: json['progId'],
       eduStartDate: json['eduStartDate'],
       eduFinishDate: json['eduFinishDate'],
@@ -43,7 +43,7 @@ class EducationModel {
       'eduId': eduId,
       'userId': userId,
       'uniId': uniId,
-      'uniName': uniName,
+      'uniName': uniName, // uniName'i JSON'a ekle
       'progId': progId,
       'eduStartDate': eduStartDate,
       'eduFinishDate': eduFinishDate,

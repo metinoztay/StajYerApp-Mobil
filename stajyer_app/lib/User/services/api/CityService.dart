@@ -20,4 +20,16 @@ class CityService {
       throw Exception('Şehirler alınamadı: ${response.statusCode}');
     }
   }
+
+  Future<String> getCityById(int cityId) async {
+    final response = await http.get(
+        Uri.parse('http://stajyerapp.runasp.net/api/City/ListCities${cityId}'));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return data['cityName'];
+    } else {
+      throw Exception('Şehirler adı alınamadı: ${response.statusCode}');
+    }
+  }
 }

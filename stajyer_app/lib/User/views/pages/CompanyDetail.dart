@@ -246,7 +246,7 @@ class _CompanyDetailState extends State<CompanyDetail> {
             width: double.infinity,
             height: 240,
             child: Card(
-              color: companyCard1,
+              color: isActive ? companyCard2 : Colors.grey[400],
               child: Padding(
                 padding: const EdgeInsets.only(left: 20.0),
                 child: Column(

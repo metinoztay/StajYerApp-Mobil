@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
@@ -293,137 +294,144 @@ class _ProfileState extends State<Profile> {
     TextEditingController newPasswordController = TextEditingController();
     TextEditingController confirmPasswordController = TextEditingController();
 
+    String? oldPasswordError;
+    String? newPasswordError;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          title: Text("Şifre Değiştir", style: TextStyle(color: ilanCard)),
-          content: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: oldPasswordController,
-                  obscureText: true,
-                  decoration: InputDecoration(labelText: "Eski Şifre"),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Eski şifre gereklidir';
-                    }
-                    return null;
-                  },
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: Text("Şifre Değiştir", style: TextStyle(color: ilanCard)),
+              content: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: oldPasswordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                          labelText: "Eski Şifre", errorText: oldPasswordError),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Eski şifre gereklidir';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 8),
+                    TextFormField(
+                      controller: newPasswordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                          labelText: "Yeni Şifre", errorText: newPasswordError),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Yeni şifre gereklidir';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 8),
+                    TextFormField(
+                      controller: confirmPasswordController,
+                      obscureText: true,
+                      decoration:
+                          InputDecoration(labelText: "Yeni Şifre Tekrar"),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Yeni şifre tekrar gereklidir';
+                        }
+                        if (value != newPasswordController.text) {
+                          return 'Yeni şifreler eşleşmiyor';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
                 ),
-                SizedBox(height: 8),
-                TextFormField(
-                  controller: newPasswordController,
-                  obscureText: true,
-                  decoration: InputDecoration(labelText: "Yeni Şifre"),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Yeni şifre gereklidir';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 8),
-                TextFormField(
-                  controller: confirmPasswordController,
-                  obscureText: true,
-                  decoration: InputDecoration(labelText: "Yeni Şifre Tekrar"),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Yeni şifre tekrar gereklidir';
-                    }
-                    if (value != newPasswordController.text) {
-                      return 'Yeni şifreler eşleşmiyor';
-                    }
-                    return null;
-                  },
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ilanCard,
-                foregroundColor: Colors.white,
               ),
-              onPressed: () async {
-                if (_formKey.currentState?.validate() ?? false) {
-                  final oldPassword = oldPasswordController.text;
-                  final newPassword = newPasswordController.text;
+              actions: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ilanCard,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () async {
+                    setState(() {
+                      oldPasswordError = null;
+                      newPasswordError = null;
+                    });
+                    if (_formKey.currentState?.validate() ?? false) {
+                      final oldPassword = oldPasswordController.text;
+                      final newPassword = newPasswordController.text;
 
-                  SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  int? userId = prefs.getInt('userId');
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      int? userId = prefs.getInt('userId');
 
-                  if (userId != null) {
-                    try {
-                      final response = await http.put(
-                        Uri.parse(
-                            'http://stajyerapp.runasp.net/api/User/ChangePassword'), // API URL'yi buraya girin
-                        headers: {
-                          'Content-Type': 'application/json',
-                        },
-                        body: jsonEncode({
-                          'userId': userId,
-                          'oldPassword': oldPassword,
-                          'newPassword': newPassword,
-                        }),
-                      );
+                      if (userId != null) {
+                        try {
+                          final response = await http.put(
+                            Uri.parse(
+                                'http://stajyerapp.runasp.net/api/User/ChangePassword'),
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            body: jsonEncode({
+                              'userId': userId,
+                              'oldPassword': oldPassword,
+                              'newPassword': newPassword,
+                            }),
+                          );
 
-                      // Yanıtın durum kodunu ve gövdesini loglayın
-                      print('Status code: ${response.statusCode}');
-                      print('Response body: ${response.body}');
-
-                      if (response.statusCode == 204) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Şifreniz başarıyla güncellendi.'),
-                          ),
-                        );
-                        Navigator.of(context).pop();
+                          if (response.statusCode == 204) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content:
+                                    Text('Şifreniz başarıyla güncellendi.'),
+                              ),
+                            );
+                            Navigator.of(context).pop();
+                          } else if (response.statusCode == 409) {
+                            setState(() {
+                              newPasswordError = "Yeni şifreler eşleşmiyor";
+                            });
+                          } else {
+                            setState(() {
+                              oldPasswordError = "${response.body}";
+                            });
+                          }
+                        } catch (e) {
+                          setState(() {
+                            oldPasswordError = "$e";
+                          });
+                        }
                       } else {
-                        print(response.body);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                                'Şifre değiştirme sırasında bir hata oluştu: ${response.body}'),
-                          ),
+                          SnackBar(content: Text('Kullanıcı ID bulunamadı')),
                         );
                       }
-                    } catch (e) {
-                      print(e.toString());
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                              'Şifre değiştirme sırasında bir hata oluştu: ${e.toString()}'),
-                        ),
-                      );
                     }
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Kullanıcı ID bulunamadı')),
-                    );
-                  }
-                }
-              },
-              child: Text(
-                "Değiştir",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-            TextButton(
-              style: TextButton.styleFrom(backgroundColor: Colors.red),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("İptal", style: TextStyle(color: Colors.white)),
-            ),
-          ],
+                  },
+                  child: Text(
+                    "Değiştir",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(backgroundColor: Colors.red),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("İptal", style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            );
+          },
         );
       },
     );

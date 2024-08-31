@@ -15,6 +15,7 @@ Future<bool> showAddEducationDialog(BuildContext context) async {
   DateTime? _expStartDate;
   DateTime? _expFinishDate;
   String? _selectedSituaion;
+  String? selectedUniName;
 
   List<Map<String, dynamic>> universities = [];
   List<Map<String, dynamic>> programs = [];
@@ -75,6 +76,7 @@ Future<bool> showAddEducationDialog(BuildContext context) async {
       }
 
       final education = EducationModel(
+        uniName: selectedUniName,
         eduId: 0,
         userId: userId,
         uniId:
@@ -136,6 +138,7 @@ Future<bool> showAddEducationDialog(BuildContext context) async {
                             .toList() as Iterable<String>;
                       },
                       onSelected: (String selection) {
+                        selectedUniName = selection;
                         int selectedUniId = universities.firstWhere(
                             (univercity) =>
                                 univercity['uniName'] == selection)['uniId'];

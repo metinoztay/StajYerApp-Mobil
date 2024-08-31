@@ -21,6 +21,31 @@ class UnivercityService {
       throw Exception('Üniversiteler alınamadı: ${response.statusCode}');
     }
   }
+  // API'nizin temel URL'sini buraya ekleyin
+
+  Future<String> getUniversityName(int uniId) async {
+    final response = await http.get(Uri.parse(
+        'http://stajyerapp.runasp.net/api/Univercity/ListUnivercities${uniId}'));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return data['uniName']; // API yanıtına göre anahtar ismi
+    } else {
+      throw Exception('Üniversite adı yüklenemedi');
+    }
+  }
+
+  Future<Map<String, dynamic>> getProgramById(int progId) async {
+    final url = Uri.parse(
+        'http://stajyerapp.runasp.net/api/Univercity/ListPrograms${progId}');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Program bilgileri yüklenemedi');
+    }
+  }
 
   Future<List<Map<String, dynamic>>> getPrograms() async {
     final response = await http

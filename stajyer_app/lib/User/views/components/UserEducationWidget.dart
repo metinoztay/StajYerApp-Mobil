@@ -28,8 +28,8 @@ class _UserEducationWidgetState extends State<UserEducationWidget> {
     try {
       final educations =
           await EducationService().GetUserEducations(widget.userId);
-      print(
-          'API Yanıtı: $educations'); // educations burada List<EducationModel>
+      print('API Yanıtı: $educations');
+      print(educations.toString()); // educations burada List<EducationModel>
 
       setState(() {
         this.educations = educations;

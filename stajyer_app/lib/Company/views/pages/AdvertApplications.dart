@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:stajyer_app/Company/models/AppUserModel.dart';
 import 'package:stajyer_app/Company/services/api/ApplicationService.dart';
+import 'package:stajyer_app/User/services/api/CityService.dart';
+import 'package:stajyer_app/User/services/api/UnivercityService.dart';
 import 'package:stajyer_app/User/utils/colors.dart';
 
 class AdvertApplications extends StatefulWidget {
@@ -13,6 +18,21 @@ class AdvertApplications extends StatefulWidget {
 }
 
 class _AdvertApplicationsState extends State<AdvertApplications> {
+  List<Map<String, dynamic>> universities = [];
+
+  Future<void> _fetchData() async {
+    try {
+      final univercityService = UnivercityService();
+      universities = await univercityService.getUniversities();
+      // programs = await univercityService.getPrograms();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Veriler alınırken bir hata oluştu: $e')),
+      );
+      print('Veri alma hatası: $e'); // Hata mesajını loglayın
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,6 +56,9 @@ class _AdvertApplicationsState extends State<AdvertApplications> {
               itemCount: applicants.length,
               itemBuilder: (context, index) {
                 final user = applicants[index];
+
+                print(
+                    'Eğitimler: ${user.educations.map((e) => e.toJson()).toList()}');
                 return _ApplicantCard(user: user);
               },
             );
@@ -56,6 +79,14 @@ class _ApplicantCard extends StatefulWidget {
 
 class __ApplicantCardState extends State<_ApplicantCard> {
   bool _isExpanded = false;
+  late UnivercityService _educationService;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _educationService = UnivercityService();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -403,7 +434,7 @@ class __ApplicantCardState extends State<_ApplicantCard> {
       children: widget.user.experiences.isNotEmpty
           ? widget.user.experiences.map((experience) {
               return Card(
-                color: Colors.blue[50],
+                color: Colors.white,
                 margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
@@ -441,21 +472,56 @@ class __ApplicantCardState extends State<_ApplicantCard> {
                         ],
                       ),
                       SizedBox(height: 8),
-                      // Row(
-                      //   children: [
-                      //     Icon(Icons.location_city, color: Colors.blue),
-                      //     SizedBox(width: 8),
-                      //     Text(
-                      //       experience.expCityId != null
-                      //           ? "Şehir ID: ${experience.expCityId}"
-                      //           : "Şehir",
-                      //       style: TextStyle(
-                      //         fontSize: 14,
-                      //         color: Colors.black54,
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
+                      FutureBuilder<String>(
+                        future: CityService()
+                            .getCityById(experience.expCityId ?? 0),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Row(
+                              children: [
+                                Icon(Icons.location_city, color: Colors.blue),
+                                SizedBox(width: 8),
+                                Text(
+                                  "Şehir yükleniyor...",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                              ],
+                            );
+                          } else if (snapshot.hasError) {
+                            return Row(
+                              children: [
+                                Icon(Icons.location_city, color: Colors.blue),
+                                SizedBox(width: 8),
+                                Text(
+                                  "Şehir yüklenemedi",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                              ],
+                            );
+                          } else {
+                            return Row(
+                              children: [
+                                Icon(Icons.location_city, color: Colors.blue),
+                                SizedBox(width: 8),
+                                Text(
+                                  snapshot.data ?? "Şehir",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+                        },
+                      ),
                       SizedBox(height: 8),
                       Row(
                         children: [
@@ -505,111 +571,143 @@ class __ApplicantCardState extends State<_ApplicantCard> {
       title: Text(
         'Eğitim',
         style: TextStyle(
-            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
       ),
       children: widget.user.educations.isNotEmpty
           ? widget.user.educations.map((education) {
-              return Card(
-                color: Colors.white,
-                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+              return FutureBuilder<Map<String, dynamic>>(
+                future: Future.wait([
+                  _educationService.getUniversityName(education.uniId),
+                  _educationService.getProgramById(education.progId),
+                ]).then((results) {
+                  return {
+                    'universityName': results[0],
+                    'program': results[1],
+                  };
+                }),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return ListTile(title: Text('Hata: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return ListTile(title: Text('Bilgi bulunamadı.'));
+                  }
+
+                  final universityName = snapshot.data!['universityName'];
+                  final program = snapshot.data!['program'];
+
+                  return Card(
+                    color: Colors.white,
+                    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.school, color: ilanCard),
-                          SizedBox(width: 8),
-                          Text(
-                            education.uniName ?? "Üniversite Adı",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 8),
-                      // Row(
-                      //   children: [
-                      //     Icon(Icons.book, color: ilanCard),
-                      //     SizedBox(width: 8),
-                      //     Text(
-                      //       'Program ID: ${education.progId}',
-                      //       style: TextStyle(
-                      //         fontSize: 14,
-                      //         color: Colors.black54,
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
-                      SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(Icons.date_range, color: ilanCard),
-                          SizedBox(width: 8),
-                          Text(
-                            '${education.eduStartDate ?? "Başlangıç Tarihi"} - ${education.eduFinishDate ?? "Bitiş Tarihi"}',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black54,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(Icons.grade, color: ilanCard),
-                          SizedBox(width: 8),
-                          Text(
-                            education.eduGano != null
-                                ? 'GANO: ${education.eduGano}'
-                                : "GANO: Bilinmiyor",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black54,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(Icons.info, color: ilanCard),
-                          SizedBox(width: 8),
-                          Text(
-                            education.eduSituation ?? "Durum Bilgisi",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black54,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(Icons.description, color: ilanCard),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              education.eduDesc ?? "Açıklama eklenmemiş.",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.black87,
+                          Row(
+                            children: [
+                              Icon(Icons.school, color: ilanCard),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  universityName ?? 'Üniversite Adı Bulunmuyor',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Icon(Icons.book, color: ilanCard),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  program['progName'] ??
+                                      'Program Adı Bulunmuyor',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Icon(Icons.date_range, color: ilanCard),
+                              SizedBox(width: 8),
+                              Text(
+                                '${education.eduStartDate ?? "Başlangıç Tarihi"} - ${education.eduFinishDate ?? "Bitiş Tarihi"}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Icon(Icons.grade, color: ilanCard),
+                              SizedBox(width: 8),
+                              Text(
+                                education.eduGano != null
+                                    ? 'GANO: ${education.eduGano}'
+                                    : "GANO: Bilinmiyor",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Icon(Icons.info, color: ilanCard),
+                              SizedBox(width: 8),
+                              Text(
+                                education.eduSituation ?? "Durum Bilgisi",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Icon(Icons.description, color: ilanCard),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  education.eduDesc ?? "Açıklama eklenmemiş.",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               );
             }).toList()
           : [

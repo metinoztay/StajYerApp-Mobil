@@ -8,7 +8,6 @@ import 'package:stajyer_app/Company/models/Advertisement.dart';
 import 'package:stajyer_app/Company/services/api/CompanyAdvertService.dart';
 import 'package:stajyer_app/Company/views/pages/AdvertApplications.dart';
 import 'package:stajyer_app/Company/views/pages/EditAdvertPage.dart';
-import 'package:stajyer_app/Company/views/pages/deneme.dart';
 import 'package:stajyer_app/User/utils/colors.dart';
 import 'package:stajyer_app/User/views/components/SirketCard.dart';
 
@@ -286,13 +285,15 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                         children: [
                           Text(
                             title,
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(
+                                color: isActive ? Colors.white : Colors.black),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
                           Text(
                             location,
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(
+                                color: isActive ? Colors.white : Colors.black),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
@@ -303,7 +304,8 @@ class _CompanyHomePageState extends State<CompanyHomePage> {
                       onPressed: () {
                         _deleteAdvert(advert.advertId);
                       },
-                      icon: Icon(Icons.delete, color: Colors.white),
+                      icon: Icon(Icons.delete,
+                          color: isActive ? Colors.white : Colors.black),
                     ),
                   ],
                 ),
